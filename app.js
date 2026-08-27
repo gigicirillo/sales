@@ -31,6 +31,7 @@ form.addEventListener('submit', async (event) => {
   const payload = {
     seller: data.get('seller'),
     date: data.get('date'),
+    center: data.get('center'),
     callsMade: numberValue(data, 'callsMade'),
     callsAnswered: numberValue(data, 'callsAnswered'),
     appointmentsFromCalls: numberValue(data, 'appointmentsFromCalls'),
@@ -62,12 +63,14 @@ form.addEventListener('submit', async (event) => {
     const result = await response.json();
     if (!result.ok) throw new Error(result.error || 'Errore durante il salvataggio');
 
-    formMessage.textContent = `Dati di ${payload.seller} per il ${payload.date} salvati correttamente.`;
+    formMessage.textContent = `Dati di ${payload.seller} per ${payload.center} del ${payload.date} salvati correttamente.`;
     formMessage.classList.add('success');
     const seller = payload.seller;
     const selectedDate = payload.date;
+    const center = payload.center;
     form.reset();
     document.getElementById('seller').value = seller;
+    document.getElementById('center').value = center;
     dateInput.value = selectedDate;
     form.querySelectorAll('input[type="number"]').forEach(input => input.value = '0');
   } catch (error) {
