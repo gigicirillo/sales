@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#111827" />
+  <title>Futura Clubs | Dashboard performance</title>
+  <link rel="stylesheet" href="report.css" />
+</head>
+<body>
+  <main class="report-shell">
+    <header class="report-topbar">
+      <div><p class="eyebrow">Futura Clubs</p><h1>Dashboard performance commerciale</h1><p>Analisi aggregata del gruppo vendita e dei singoli consulenti.</p></div>
+      <a class="back-link" href="index.html">← Inserimento dati</a>
+    </header>
+
+    <section class="filters-card">
+      <div class="filter-field"><label for="dateFrom">Dal</label><input id="dateFrom" type="date" /></div>
+      <div class="filter-field"><label for="dateTo">Al</label><input id="dateTo" type="date" /></div>
+      <div class="filter-field"><label for="sellerFilter">Venditore</label><select id="sellerFilter"><option value="all">Tutti i venditori</option><option>Donatella</option><option>Elena</option><option>Erika</option><option>Francesco</option><option>Ramses</option></select></div>
+      <div class="filter-field"><label for="centerFilter">Centro</label><select id="centerFilter"><option value="all">Tutti i centri</option><option>Futura Evo</option><option>Futura Fit</option></select></div>
+      <button id="applyFilters" type="button">Aggiorna report</button>
+    </section>
+
+    <section class="view-options">
+      <strong>Visualizza:</strong>
+      <label><input type="checkbox" class="metric-toggle" value="calls" checked /> Telefonate</label>
+      <label><input type="checkbox" class="metric-toggle" value="tours" checked /> Tour</label>
+      <label><input type="checkbox" class="metric-toggle" value="organic" checked /> Organico</label>
+      <label><input type="checkbox" class="metric-toggle" value="other" checked /> Altre azioni</label>
+      <label><input type="checkbox" class="metric-toggle" value="sales" checked /> Vendite</label>
+      <label><input type="checkbox" class="metric-toggle" value="payments" checked /> Incassi</label>
+    </section>
+
+    <section id="reportCapture" class="report-content">
+      <div class="report-meta"><div><span>Periodo</span><strong id="periodLabel">—</strong></div><div><span>Venditore</span><strong id="sellerLabel">Tutti</strong></div><div><span>Centro</span><strong id="centerLabel">Tutti</strong></div><div><span>Righe analizzate</span><strong id="rowsLabel">0</strong></div></div>
+
+      <section id="kpiGrid" class="kpi-grid"></section>
+
+      <section class="charts-grid">
+        <article class="chart-card"><div class="chart-heading"><h2>Azioni commerciali</h2><p>Volumi per tipologia</p></div><canvas id="actionsChart" width="760" height="340"></canvas></article>
+        <article class="chart-card"><div class="chart-heading"><h2>Conversioni</h2><p>Abbonamenti rispetto alle opportunità</p></div><canvas id="conversionChart" width="760" height="340"></canvas></article>
+        <article class="chart-card"><div class="chart-heading"><h2>Vendite e incassi</h2><p>Valori economici aggregati</p></div><canvas id="salesChart" width="760" height="340"></canvas></article>
+        <article class="chart-card"><div class="chart-heading"><h2>Performance venditori</h2><p>Fatturato per consulente nel periodo</p></div><canvas id="sellerChart" width="760" height="340"></canvas></article>
+      </section>
+    </section>
+
+    <div class="report-actions"><p id="reportMessage" aria-live="polite"></p><button id="exportJpg" type="button"><span class="jpg-icon">JPG</span> Esporta report</button></div>
+  </main>
+  <script src="config.js"></script>
+  <script src="report.js"></script>
+</body>
+</html>
