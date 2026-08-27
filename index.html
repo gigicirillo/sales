@@ -9,36 +9,21 @@
 </head>
 <body>
   <main class="app-shell">
-    <header class="hero">
-      <div>
-        <p class="eyebrow">Futura Clubs</p>
-        <h1>Sales Daily</h1>
-        <p class="subtitle">Inserimento giornaliero attività commerciali</p>
-      </div>
-      <div class="status-pill" id="connectionStatus">Pronto</div>
-    </header>
-
     <section id="entryView">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Futura Clubs</p>
+          <h1>Sales Daily</h1>
+          <p class="subtitle">Inserimento giornaliero attività commerciali</p>
+        </div>
+        <div class="status-pill" id="connectionStatus">Pronto</div>
+      </header>
+
       <form id="salesForm" novalidate>
         <section class="card identity-card">
-          <div class="field">
-            <label for="seller">Venditore</label>
-            <select id="seller" name="seller" required>
-              <option value="">Seleziona venditore</option>
-              <option>Donatella</option><option>Elena</option><option>Erika</option><option>Francesco</option><option>Ramses</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="date">Giornata di riferimento</label>
-            <input id="date" name="date" type="date" required />
-            <small>Tutti i dati inseriti saranno attribuiti a questa giornata.</small>
-          </div>
-          <div class="field">
-            <label for="center">Centro di competenza</label>
-            <select id="center" name="center" required>
-              <option value="">Seleziona centro</option><option>Futura Evo</option><option>Futura Fit</option>
-            </select>
-          </div>
+          <div class="field"><label for="seller">Venditore</label><select id="seller" name="seller" required><option value="">Seleziona venditore</option><option>Donatella</option><option>Elena</option><option>Erika</option><option>Francesco</option><option>Ramses</option></select></div>
+          <div class="field"><label for="date">Giornata di riferimento</label><input id="date" name="date" type="date" required /><small>Tutti i dati inseriti saranno attribuiti a questa giornata.</small></div>
+          <div class="field"><label for="center">Centro di competenza</label><select id="center" name="center" required><option value="">Seleziona centro</option><option>Futura Evo</option><option>Futura Fit</option></select></div>
         </section>
 
         <section class="card"><div class="card-heading"><span>01</span><h2>Azioni da telefonate</h2></div><div class="grid">
@@ -79,12 +64,12 @@
     <section id="reviewView" class="summary-view" hidden>
       <div class="summary-head"><div><p class="eyebrow">Verifica prima dell'invio</p><h2>Riepilogo giornata</h2><p>Controlla tutti i dati prima della conferma definitiva.</p></div></div>
       <div id="reviewSummary" class="summary-card"></div>
-      <div class="summary-actions"><button id="backButton" type="button" class="secondary-button">Torna indietro e modifica</button><button id="confirmButton" type="button">Conferma e invia</button></div>
+      <div class="summary-actions"><button id="backButton" type="button" class="secondary-button">Torna indietro</button><button id="confirmButton" type="button">Conferma e invia</button></div>
       <p id="reviewMessage" class="form-message" aria-live="polite"></p>
     </section>
 
     <section id="successView" class="summary-view" hidden>
-      <div class="summary-head"><div><p class="sent-time" id="sentTime"></p><h2>Dati inviati correttamente</h2><p>Questo è il riepilogo definitivo dei dati registrati.</p></div></div>
+      <div class="summary-head"><div><p class="sent-time" id="sentTime"></p><h2>Riepilogo dati inviati</h2><p>I dati sono stati registrati correttamente.</p></div></div>
       <div id="successSummary" class="summary-card"></div>
       <div class="summary-actions"><button id="newEntryButton" type="button">Nuovo inserimento</button></div>
     </section>
