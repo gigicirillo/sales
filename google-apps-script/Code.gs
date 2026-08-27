@@ -1,7 +1,7 @@
 const SPREADSHEET_ID = '1u7puiT0sI9W2WYV3mbeYk_iBrRQhxSOiGbhlpXMCymw';
 
 const HEADERS = [
-  'Data', 'Venditore',
+  'Data', 'Venditore', 'Centro di competenza',
   'Telefonate fatte', 'Telefonate risposte', 'Appuntamenti da telefonate', 'Preventivi da telefonate', 'Abbonamenti da telefonate',
   'Tour fatti', 'Preventivi da tour fatti', 'Abbonamenti da tour',
   'Preventivi organici', 'Abbonamenti da preventivi organici', 'Rinnovi organici',
@@ -25,10 +25,12 @@ function doPost(e) {
       sheet.setFrozenRows(1);
       sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold').setBackground('#111827').setFontColor('#ffffff');
       sheet.autoResizeColumns(1, HEADERS.length);
+    } else {
+      ensureHeaders_(sheet);
     }
 
     const row = [
-      date, data.seller,
+      date, data.seller, data.center,
       n_(data.callsMade), n_(data.callsAnswered), n_(data.appointmentsFromCalls), n_(data.quotesFromCalls), n_(data.subscriptionsFromCalls),
       n_(data.toursDone), n_(data.quotesFromTours), n_(data.subscriptionsFromTours),
       n_(data.organicQuotes), n_(data.subscriptionsFromOrganicQuotes), n_(data.organicRenewals),
@@ -36,16 +38,17 @@ function doPost(e) {
       n_(data.revenue), n_(data.collected), n_(data.futureAmount), new Date()
     ];
 
-    const existingRow = findExistingRow_(sheet, data.date, data.seller);
+    const existingRow = findExistingRow_(sheet, data.date, data.seller, data.center);
     if (existingRow) {
       sheet.getRange(existingRow, 1, 1, row.length).setValues([row]);
     } else {
       sheet.appendRow(row);
     }
 
-    sheet.getRange(2, 1, Math.max(sheet.getLastRow() - 1, 1), 1).setNumberFormat('dd/MM/yyyy');
-    sheet.getRange(2, 16, Math.max(sheet.getLastRow() - 1, 1), 3).setNumberFormat('€ #,##0.00');
-    sheet.getRange(2, 19, Math.max(sheet.getLastRow() - 1, 1), 1).setNumberFormat('dd/MM/yyyy HH:mm:ss');
+    const rows = Math.max(sheet.getLastRow() - 1, 1);
+    sheet.getRange(2, 1, rows, 1).setNumberFormat('dd/MM/yyyy');
+    sheet.getRange(2, 17, rows, 3).setNumberFormat('€ #,##0.00');
+    sheet.getRange(2, 20, rows, 1).setNumberFormat('dd/MM/yyyy HH:mm:ss');
 
     return json_({ ok: true, sheet: monthName, updated: Boolean(existingRow) });
   } catch (error) {
@@ -53,20 +56,32 @@ function doPost(e) {
   }
 }
 
-function findExistingRow_(sheet, isoDate, seller) {
+function ensureHeaders_(sheet) {
+  const currentHeaders = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), HEADERS.length)).getValues()[0];
+  if (currentHeaders[2] !== 'Centro di competenza') {
+    sheet.insertColumnAfter(2);
+  }
+  sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+  sheet.setFrozenRows(1);
+  sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold').setBackground('#111827').setFontColor('#ffffff');
+}
+
+function findExistingRow_(sheet, isoDate, seller, center) {
   const lastRow = sheet.getLastRow();
   if (lastRow < 2) return null;
-  const values = sheet.getRange(2, 1, lastRow - 1, 2).getValues();
+  const values = sheet.getRange(2, 1, lastRow - 1, 3).getValues();
   for (let i = 0; i < values.length; i++) {
     const rowDate = Utilities.formatDate(new Date(values[i][0]), Session.getScriptTimeZone(), 'yyyy-MM-dd');
-    if (rowDate === isoDate && String(values[i][1]) === String(seller)) return i + 2;
+    if (rowDate === isoDate && String(values[i][1]) === String(seller) && String(values[i][2]) === String(center)) return i + 2;
   }
   return null;
 }
 
 function validatePayload_(data) {
   const sellers = ['Donatella', 'Elena', 'Erika', 'Francesco', 'Ramses'];
+  const centers = ['Futura Evo', 'Futura Fit'];
   if (!sellers.includes(data.seller)) throw new Error('Venditore non valido');
+  if (!centers.includes(data.center)) throw new Error('Centro di competenza non valido');
   if (!/^\d{4}-\d{2}-\d{2}$/.test(data.date || '')) throw new Error('Data non valida');
 }
 
