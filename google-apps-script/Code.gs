@@ -6,7 +6,9 @@ const HEADERS = [
   'Tour fatti', 'Preventivi da tour fatti', 'Abbonamenti da tour',
   'Preventivi organici', 'Abbonamenti da preventivi organici', 'Rinnovi organici',
   'Prove attivate', 'Guest pass consegnati',
-  'Fatturato', 'Incassato', 'Futurament', 'Timestamp invio'
+  'Fatturato', 'Futura',
+  'Totale Incassato', 'Inc. POS', 'Inc. Contanti', 'Inc. Bonifico', 'Inc. Finanziamento',
+  'Note', 'Timestamp invio'
 ];
 
 function doPost(e) {
@@ -23,8 +25,7 @@ function doPost(e) {
       sheet = ss.insertSheet(monthName);
       sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
       sheet.setFrozenRows(1);
-      sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold').setBackground('#111827').setFontColor('#ffffff');
-      sheet.autoResizeColumns(1, HEADERS.length);
+      styleHeaders_(sheet);
     } else {
       ensureHeaders_(sheet);
     }
@@ -35,20 +36,20 @@ function doPost(e) {
       n_(data.toursDone), n_(data.quotesFromTours), n_(data.subscriptionsFromTours),
       n_(data.organicQuotes), n_(data.subscriptionsFromOrganicQuotes), n_(data.organicRenewals),
       n_(data.trialsActivated), n_(data.guestPasses),
-      n_(data.revenue), n_(data.collected), n_(data.futureAmount), new Date()
+      n_(data.revenue), n_(data.futuraAmount),
+      n_(data.totalCollected), n_(data.collectedPos), n_(data.collectedCash), n_(data.collectedBank), n_(data.collectedFinance),
+      String(data.notes || ''), new Date()
     ];
 
     const existingRow = findExistingRow_(sheet, data.date, data.seller, data.center);
-    if (existingRow) {
-      sheet.getRange(existingRow, 1, 1, row.length).setValues([row]);
-    } else {
-      sheet.appendRow(row);
-    }
+    if (existingRow) sheet.getRange(existingRow, 1, 1, row.length).setValues([row]);
+    else sheet.appendRow(row);
 
     const rows = Math.max(sheet.getLastRow() - 1, 1);
     sheet.getRange(2, 1, rows, 1).setNumberFormat('dd/MM/yyyy');
-    sheet.getRange(2, 17, rows, 3).setNumberFormat('€ #,##0.00');
-    sheet.getRange(2, 20, rows, 1).setNumberFormat('dd/MM/yyyy HH:mm:ss');
+    sheet.getRange(2, 17, rows, 7).setNumberFormat('€ #,##0.00');
+    sheet.getRange(2, 25, rows, 1).setNumberFormat('dd/MM/yyyy HH:mm:ss');
+    sheet.autoResizeColumns(1, HEADERS.length);
 
     return json_({ ok: true, sheet: monthName, updated: Boolean(existingRow) });
   } catch (error) {
@@ -57,11 +58,15 @@ function doPost(e) {
 }
 
 function ensureHeaders_(sheet) {
-  const currentHeaders = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), HEADERS.length)).getValues()[0];
-  if (currentHeaders[2] !== 'Centro di competenza') {
-    sheet.insertColumnAfter(2);
-  }
+  const lastColumn = Math.max(sheet.getLastColumn(), HEADERS.length);
+  const current = sheet.getRange(1, 1, 1, lastColumn).getValues()[0];
+  if (current[2] !== 'Centro di competenza') sheet.insertColumnAfter(2);
+  while (sheet.getMaxColumns() < HEADERS.length) sheet.insertColumnAfter(sheet.getMaxColumns());
   sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+  styleHeaders_(sheet);
+}
+
+function styleHeaders_(sheet) {
   sheet.setFrozenRows(1);
   sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold').setBackground('#111827').setFontColor('#ffffff');
 }
