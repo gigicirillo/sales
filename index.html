@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#111827" />
   <title>Futura Clubs | Inserimento attività commerciali</title>
-  <link rel="stylesheet" href="styles.css?v=20260827-2315" />
+  <link rel="stylesheet" href="styles.css?v=20260827-2325" />
 </head>
 <body>
   <main class="app-shell">
     <section id="entryView">
-      <header class="hero"><div><p class="eyebrow">Futura Clubs</p><p class="subtitle">Inserimento giornaliero attività commerciali</p></div><div class="hero-actions"><nav class="top-nav" aria-label="Navigazione principale"><a class="top-nav-link active" href="index.html">Inserimento dati</a><a class="top-nav-link" href="report.html">Dashboard performance</a></nav><div class="status-pill" id="connectionStatus">Pronto</div></div></header>
+      <header class="hero"><div><p class="eyebrow">Futura Clubs</p><p class="subtitle">Inserimento giornaliero attività commerciali</p></div><div class="hero-actions"><nav class="top-nav" aria-label="Navigazione principale"><a class="top-nav-link" href="report.html">Dashboard</a><a class="top-nav-link" href="performance.html">Indice</a><a class="top-nav-link active" href="index.html">Inserimento Daily</a></nav><div class="status-pill" id="connectionStatus">Pronto</div></div></header>
       <form id="salesForm" novalidate>
         <section class="card identity-card"><div class="field"><label for="seller">Venditore</label><select id="seller" name="seller" required><option value="">Seleziona venditore</option><option>Donatella</option><option>Elena</option><option>Erika</option><option>Francesco</option><option>Ramses</option></select></div><div class="field"><label for="date">Giornata di riferimento</label><input id="date" name="date" type="date" required /></div><div class="field"><label for="center">Centro di competenza</label><select id="center" name="center" required><option value="">Seleziona centro</option><option>Futura Evo</option><option>Futura Fit</option></select></div></section>
         <div class="cards-layout">
@@ -31,6 +31,6 @@
     <section id="reviewView" class="summary-view" hidden><div class="summary-head"><div><p class="eyebrow">Verifica prima dell'invio</p><h2>Riepilogo giornata</h2><p>Controlla tutti i dati prima della conferma definitiva.</p></div></div><div id="reviewSummary" class="summary-card"></div><div class="summary-actions"><button id="backButton" type="button" class="secondary-button">Torna indietro</button><button id="confirmButton" type="button">Conferma e invia</button></div><p id="reviewMessage" class="form-message" aria-live="polite"></p></section>
     <section id="successView" class="summary-view" hidden><div id="successCapture"><div class="summary-head"><div><p class="sent-time" id="sentTime"></p><h2>Riepilogo dati inviati</h2><p>I dati sono stati registrati correttamente.</p></div></div><div id="successSummary" class="summary-card"></div></div><div class="summary-actions"><button id="newEntryButton" type="button">Nuovo inserimento</button><button id="downloadJpgButton" type="button" class="download-button"><span class="jpg-icon" aria-hidden="true">JPG</span> Download</button></div><p id="downloadMessage" class="form-message" aria-live="polite"></p></section>
   </main>
-  <script src="config.js?v=20260827-2315"></script><script src="app.js?v=20260827-2315"></script>
+  <script src="config.js?v=20260827-2325"></script><script src="app.js?v=20260827-2325"></script>
 </body>
 </html>
