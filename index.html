@@ -18,85 +18,76 @@
       <div class="status-pill" id="connectionStatus">Pronto</div>
     </header>
 
-    <form id="salesForm" novalidate>
-      <section class="card identity-card">
-        <div class="field">
-          <label for="seller">Venditore</label>
-          <select id="seller" name="seller" required>
-            <option value="">Seleziona venditore</option>
-            <option>Donatella</option>
-            <option>Elena</option>
-            <option>Erika</option>
-            <option>Francesco</option>
-            <option>Ramses</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="date">Giornata di riferimento</label>
-          <input id="date" name="date" type="date" required />
-          <small>Tutti i dati inseriti saranno attribuiti a questa giornata.</small>
-        </div>
-        <div class="field">
-          <label for="center">Centro di competenza</label>
-          <select id="center" name="center" required>
-            <option value="">Seleziona centro</option>
-            <option>Futura Evo</option>
-            <option>Futura Fit</option>
-          </select>
-        </div>
-      </section>
+    <section id="entryView">
+      <form id="salesForm" novalidate>
+        <section class="card identity-card">
+          <div class="field">
+            <label for="seller">Venditore</label>
+            <select id="seller" name="seller" required>
+              <option value="">Seleziona venditore</option>
+              <option>Donatella</option><option>Elena</option><option>Erika</option><option>Francesco</option><option>Ramses</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="date">Giornata di riferimento</label>
+            <input id="date" name="date" type="date" required />
+            <small>Tutti i dati inseriti saranno attribuiti a questa giornata.</small>
+          </div>
+          <div class="field">
+            <label for="center">Centro di competenza</label>
+            <select id="center" name="center" required>
+              <option value="">Seleziona centro</option><option>Futura Evo</option><option>Futura Fit</option>
+            </select>
+          </div>
+        </section>
 
-      <section class="card">
-        <div class="card-heading"><span>01</span><h2>Azioni da telefonate</h2></div>
-        <div class="grid">
+        <section class="card"><div class="card-heading"><span>01</span><h2>Azioni da telefonate</h2></div><div class="grid">
           <div class="field"><label for="callsMade">Telefonate fatte</label><input id="callsMade" name="callsMade" type="number" min="0" step="1" inputmode="numeric" value="0" required /></div>
           <div class="field"><label for="callsAnswered">Telefonate risposte</label><input id="callsAnswered" name="callsAnswered" type="number" min="0" step="1" inputmode="numeric" value="0" required /></div>
           <div class="field"><label for="appointmentsFromCalls">Appuntamenti da telefonate</label><input id="appointmentsFromCalls" name="appointmentsFromCalls" type="number" min="0" step="1" inputmode="numeric" value="0" required /></div>
           <div class="field"><label for="quotesFromCalls">Preventivi da telefonate</label><input id="quotesFromCalls" name="quotesFromCalls" type="number" min="0" step="1" inputmode="numeric" value="0" required /></div>
           <div class="field"><label for="subscriptionsFromCalls">Abbonamenti da telefonate</label><input id="subscriptionsFromCalls" name="subscriptionsFromCalls" type="number" min="0" step="1" inputmode="numeric" value="0" required /></div>
-        </div>
-      </section>
+        </div></section>
 
-      <section class="card">
-        <div class="card-heading"><span>02</span><h2>Azioni da tour spontanei</h2></div>
-        <div class="grid">
+        <section class="card"><div class="card-heading"><span>02</span><h2>Azioni da tour spontanei</h2></div><div class="grid">
           <div class="field"><label for="toursDone">Tour fatti</label><input id="toursDone" name="toursDone" type="number" min="0" step="1" inputmode="numeric" value="0" required /></div>
           <div class="field"><label for="quotesFromTours">Preventivi da tour fatti</label><input id="quotesFromTours" name="quotesFromTours" type="number" min="0" step="1" inputmode="numeric" value="0" required /></div>
           <div class="field"><label for="subscriptionsFromTours">Abbonamenti da tour</label><input id="subscriptionsFromTours" name="subscriptionsFromTours" type="number" min="0" step="1" inputmode="numeric" value="0" required /></div>
-        </div>
-      </section>
+        </div></section>
 
-      <section class="card">
-        <div class="card-heading"><span>03</span><h2>Azioni da clientela organica</h2></div>
-        <div class="grid">
+        <section class="card"><div class="card-heading"><span>03</span><h2>Azioni da clientela organica</h2></div><div class="grid">
           <div class="field"><label for="organicQuotes">Preventivi</label><input id="organicQuotes" name="organicQuotes" type="number" min="0" step="1" inputmode="numeric" value="0" required /></div>
           <div class="field"><label for="subscriptionsFromOrganicQuotes">Abbonamenti da preventivi</label><input id="subscriptionsFromOrganicQuotes" name="subscriptionsFromOrganicQuotes" type="number" min="0" step="1" inputmode="numeric" value="0" required /></div>
           <div class="field"><label for="organicRenewals">Rinnovi organici</label><input id="organicRenewals" name="organicRenewals" type="number" min="0" step="1" inputmode="numeric" value="0" required /></div>
-        </div>
-      </section>
+        </div></section>
 
-      <section class="card">
-        <div class="card-heading"><span>04</span><h2>Altre azioni</h2></div>
-        <div class="grid">
+        <section class="card"><div class="card-heading"><span>04</span><h2>Altre azioni</h2></div><div class="grid">
           <div class="field"><label for="trialsActivated">Prove attivate</label><input id="trialsActivated" name="trialsActivated" type="number" min="0" step="1" inputmode="numeric" value="0" required /></div>
           <div class="field"><label for="guestPasses">Guest pass consegnati</label><input id="guestPasses" name="guestPasses" type="number" min="0" step="1" inputmode="numeric" value="0" required /></div>
-        </div>
-      </section>
+        </div></section>
 
-      <section class="card sales-card">
-        <div class="card-heading"><span>05</span><h2>Vendite</h2></div>
-        <div class="grid money-grid">
+        <section class="card sales-card"><div class="card-heading"><span>05</span><h2>Vendite</h2></div><div class="grid money-grid">
           <div class="field money-field"><label for="revenue">Fatturato</label><div class="currency-wrap"><span>€</span><input id="revenue" name="revenue" type="number" min="0" step="0.01" inputmode="decimal" value="0" required /></div></div>
           <div class="field money-field"><label for="collected">Incassato</label><div class="currency-wrap"><span>€</span><input id="collected" name="collected" type="number" min="0" step="0.01" inputmode="decimal" value="0" required /></div></div>
           <div class="field money-field"><label for="futureAmount">Futurament</label><div class="currency-wrap"><span>€</span><input id="futureAmount" name="futureAmount" type="number" min="0" step="0.01" inputmode="decimal" value="0" required /></div></div>
-        </div>
-      </section>
+        </div></section>
 
-      <div class="form-actions">
-        <p id="formMessage" class="form-message" aria-live="polite"></p>
-        <button id="submitButton" type="submit">Invia dati giornata</button>
-      </div>
-    </form>
+        <div class="form-actions"><p id="formMessage" class="form-message" aria-live="polite"></p><button id="submitButton" type="submit">Riepilogo giornata</button></div>
+      </form>
+    </section>
+
+    <section id="reviewView" class="summary-view" hidden>
+      <div class="summary-head"><div><p class="eyebrow">Verifica prima dell'invio</p><h2>Riepilogo giornata</h2><p>Controlla tutti i dati prima della conferma definitiva.</p></div></div>
+      <div id="reviewSummary" class="summary-card"></div>
+      <div class="summary-actions"><button id="backButton" type="button" class="secondary-button">Torna indietro e modifica</button><button id="confirmButton" type="button">Conferma e invia</button></div>
+      <p id="reviewMessage" class="form-message" aria-live="polite"></p>
+    </section>
+
+    <section id="successView" class="summary-view" hidden>
+      <div class="summary-head"><div><p class="sent-time" id="sentTime"></p><h2>Dati inviati correttamente</h2><p>Questo è il riepilogo definitivo dei dati registrati.</p></div></div>
+      <div id="successSummary" class="summary-card"></div>
+      <div class="summary-actions"><button id="newEntryButton" type="button">Nuovo inserimento</button></div>
+    </section>
   </main>
   <script src="config.js"></script>
   <script src="app.js"></script>
