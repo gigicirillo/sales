@@ -9,6 +9,7 @@ const HEADERS = [
   'Prove attivate', 'Pass / Voucher Consegnati', 'Pass / Voucher Attivati',
   'Fatturato', 'Futura',
   'Totale Incassato', 'Inc. POS', 'Inc. Contanti', 'Inc. Bonifico', 'Inc. Finanziamento',
+  'Abbonamenti totali venduti', 'Dettaglio abbonamenti venduti',
   'Note', 'Timestamp invio'
 ];
 
@@ -26,7 +27,7 @@ function doGet(e) {
         const dateValue=row[index['Data']]; if(!dateValue) return;
         const isoDate=Utilities.formatDate(new Date(dateValue),Session.getScriptTimeZone(),'yyyy-MM-dd'), rowSeller=String(row[index['Venditore']]||''), rowCenter=String(row[index['Centro di competenza']]||'');
         if(isoDate<from||isoDate>to) return; if(seller!=='all'&&rowSeller!==seller) return; if(center!=='all'&&rowCenter!==center) return;
-        rows.push({date:isoDate,seller:rowSeller,center:rowCenter,entryTime:cellText_(row,index,'Ora ingresso'),exitTime:cellText_(row,index,'Ora uscita'),messagesSent:cellNumber_(row,index,'Mess. inviati'),birthdayMessagesSent:cellNumber_(row,index,'Mess. di Compleanno inviati'),birthdayOutcomes:parseOutcomes_(cellText_(row,index,'Esiti messaggi compleanno')),callsMade:cellNumber_(row,index,'Telefonate fatte'),callsAnswered:cellNumber_(row,index,'Telefonate risposte'),appointmentsFromCalls:cellNumber_(row,index,'Appuntamenti da telefonate'),quotesFromCalls:cellNumber_(row,index,'Preventivi da telefonate'),subscriptionsFromCalls:cellNumber_(row,index,'Abbonamenti da telefonate'),toursDone:cellNumber_(row,index,'Tour fatti'),quotesFromTours:cellNumber_(row,index,'Preventivi da tour fatti'),subscriptionsFromTours:cellNumber_(row,index,'Abbonamenti da tour'),organicQuotes:cellNumber_(row,index,'Preventivi organici'),subscriptionsFromOrganicQuotes:cellNumber_(row,index,'Abbonamenti da preventivi organici'),organicRenewals:cellNumber_(row,index,'Rinnovi organici'),trialsActivated:cellNumber_(row,index,'Prove attivate'),passesVouchersDelivered:cellNumber_(row,index,'Pass / Voucher Consegnati'),passesVouchersActivated:cellNumber_(row,index,'Pass / Voucher Attivati'),revenue:cellNumber_(row,index,'Fatturato'),futuraAmount:cellNumber_(row,index,'Futura'),totalCollected:cellNumber_(row,index,'Totale Incassato'),collectedPos:cellNumber_(row,index,'Inc. POS'),collectedCash:cellNumber_(row,index,'Inc. Contanti'),collectedBank:cellNumber_(row,index,'Inc. Bonifico'),collectedFinance:cellNumber_(row,index,'Inc. Finanziamento')});
+        rows.push({date:isoDate,seller:rowSeller,center:rowCenter,entryTime:cellText_(row,index,'Ora ingresso'),exitTime:cellText_(row,index,'Ora uscita'),messagesSent:cellNumber_(row,index,'Mess. inviati'),birthdayMessagesSent:cellNumber_(row,index,'Mess. di Compleanno inviati'),birthdayOutcomes:parseArray_(cellText_(row,index,'Esiti messaggi compleanno')),callsMade:cellNumber_(row,index,'Telefonate fatte'),callsAnswered:cellNumber_(row,index,'Telefonate risposte'),appointmentsFromCalls:cellNumber_(row,index,'Appuntamenti da telefonate'),quotesFromCalls:cellNumber_(row,index,'Preventivi da telefonate'),subscriptionsFromCalls:cellNumber_(row,index,'Abbonamenti da telefonate'),toursDone:cellNumber_(row,index,'Tour fatti'),quotesFromTours:cellNumber_(row,index,'Preventivi da tour fatti'),subscriptionsFromTours:cellNumber_(row,index,'Abbonamenti da tour'),organicQuotes:cellNumber_(row,index,'Preventivi organici'),subscriptionsFromOrganicQuotes:cellNumber_(row,index,'Abbonamenti da preventivi organici'),organicRenewals:cellNumber_(row,index,'Rinnovi organici'),trialsActivated:cellNumber_(row,index,'Prove attivate'),passesVouchersDelivered:cellNumber_(row,index,'Pass / Voucher Consegnati'),passesVouchersActivated:cellNumber_(row,index,'Pass / Voucher Attivati'),revenue:cellNumber_(row,index,'Fatturato'),futuraAmount:cellNumber_(row,index,'Futura'),totalCollected:cellNumber_(row,index,'Totale Incassato'),collectedPos:cellNumber_(row,index,'Inc. POS'),collectedCash:cellNumber_(row,index,'Inc. Contanti'),collectedBank:cellNumber_(row,index,'Inc. Bonifico'),collectedFinance:cellNumber_(row,index,'Inc. Finanziamento'),soldSubscriptionsTotal:cellNumber_(row,index,'Abbonamenti totali venduti'),soldSubscriptions:parseArray_(cellText_(row,index,'Dettaglio abbonamenti venduti'))});
       });
     });
     rows.sort((a,b)=>a.date.localeCompare(b.date)||a.seller.localeCompare(b.seller));
@@ -40,16 +41,17 @@ function doPost(e) {
     const ss=SpreadsheetApp.openById(SPREADSHEET_ID), date=parseLocalDate_(data.date), monthName=Utilities.formatDate(date,Session.getScriptTimeZone(),'yyyy-MM');
     let sheet=ss.getSheetByName(monthName);
     if(!sheet){sheet=ss.insertSheet(monthName);sheet.getRange(1,1,1,HEADERS.length).setValues([HEADERS]);styleHeaders_(sheet);}else ensureHeaders_(sheet);
-    const row=[date,data.seller,data.center,String(data.entryTime||''),String(data.exitTime||''),n_(data.messagesSent),n_(data.birthdayMessagesSent),JSON.stringify(Array.isArray(data.birthdayOutcomes)?data.birthdayOutcomes:[]),n_(data.callsMade),n_(data.callsAnswered),n_(data.appointmentsFromCalls),n_(data.quotesFromCalls),n_(data.subscriptionsFromCalls),n_(data.toursDone),n_(data.quotesFromTours),n_(data.subscriptionsFromTours),n_(data.organicQuotes),n_(data.subscriptionsFromOrganicQuotes),n_(data.organicRenewals),n_(data.trialsActivated),n_(data.passesVouchersDelivered),n_(data.passesVouchersActivated),n_(data.revenue),n_(data.futuraAmount),n_(data.totalCollected),n_(data.collectedPos),n_(data.collectedCash),n_(data.collectedBank),n_(data.collectedFinance),String(data.notes||''),new Date()];
+    const soldSubscriptions=Array.isArray(data.soldSubscriptions)?data.soldSubscriptions:[];
+    const row=[date,data.seller,data.center,String(data.entryTime||''),String(data.exitTime||''),n_(data.messagesSent),n_(data.birthdayMessagesSent),JSON.stringify(Array.isArray(data.birthdayOutcomes)?data.birthdayOutcomes:[]),n_(data.callsMade),n_(data.callsAnswered),n_(data.appointmentsFromCalls),n_(data.quotesFromCalls),n_(data.subscriptionsFromCalls),n_(data.toursDone),n_(data.quotesFromTours),n_(data.subscriptionsFromTours),n_(data.organicQuotes),n_(data.subscriptionsFromOrganicQuotes),n_(data.organicRenewals),n_(data.trialsActivated),n_(data.passesVouchersDelivered),n_(data.passesVouchersActivated),n_(data.revenue),n_(data.futuraAmount),n_(data.totalCollected),n_(data.collectedPos),n_(data.collectedCash),n_(data.collectedBank),n_(data.collectedFinance),n_(data.soldSubscriptionsTotal),JSON.stringify(soldSubscriptions),String(data.notes||''),new Date()];
     const existingRow=findExistingRow_(sheet,data.date,data.seller,data.center); if(existingRow)sheet.getRange(existingRow,1,1,row.length).setValues([row]);else sheet.appendRow(row);
-    const rows=Math.max(sheet.getLastRow()-1,1); sheet.getRange(2,1,rows,1).setNumberFormat('dd/MM/yyyy'); sheet.getRange(2,23,rows,7).setNumberFormat('€ #,##0.00'); sheet.getRange(2,31,rows,1).setNumberFormat('dd/MM/yyyy HH:mm:ss'); sheet.autoResizeColumns(1,HEADERS.length);
+    const rows=Math.max(sheet.getLastRow()-1,1); sheet.getRange(2,1,rows,1).setNumberFormat('dd/MM/yyyy'); sheet.getRange(2,23,rows,7).setNumberFormat('€ #,##0.00'); sheet.getRange(2,33,rows,1).setNumberFormat('dd/MM/yyyy HH:mm:ss'); sheet.autoResizeColumns(1,HEADERS.length);
     return json_({ok:true,sheet:monthName,updated:Boolean(existingRow)});
   } catch(error){return json_({ok:false,error:error.message});}
 }
 
 function cellNumber_(row,index,header){const i=index[header];return i===undefined?0:n_(row[i]);}
 function cellText_(row,index,header){const i=index[header];return i===undefined?'':String(row[i]||'');}
-function parseOutcomes_(value){try{const parsed=JSON.parse(value||'[]');return Array.isArray(parsed)?parsed:[]}catch(e){return value?[value]:[]}}
+function parseArray_(value){try{const parsed=JSON.parse(value||'[]');return Array.isArray(parsed)?parsed:[]}catch(e){return value?[value]:[]}}
 function ensureHeaders_(sheet){
   while(sheet.getMaxColumns()<HEADERS.length)sheet.insertColumnAfter(sheet.getMaxColumns());
   let current=sheet.getRange(1,1,1,Math.max(sheet.getLastColumn(),HEADERS.length)).getValues()[0];
@@ -58,6 +60,8 @@ function ensureHeaders_(sheet){
   if(current[3]!=='Ora ingresso'){sheet.insertColumnsAfter(3,5);current=sheet.getRange(1,1,1,Math.max(sheet.getLastColumn(),HEADERS.length)).getValues()[0];}
   const oldGuestPassIndex=current.indexOf('Guest pass consegnati');
   if(oldGuestPassIndex>=0){sheet.getRange(1,oldGuestPassIndex+1).setValue('Pass / Voucher Consegnati');sheet.insertColumnAfter(oldGuestPassIndex+1);}else if(current.indexOf('Pass / Voucher Consegnati')>=0&&current.indexOf('Pass / Voucher Attivati')<0){sheet.insertColumnAfter(current.indexOf('Pass / Voucher Consegnati')+1);}
+  current=sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0];
+  if(current.indexOf('Abbonamenti totali venduti')<0){const noteIndex=current.indexOf('Note');if(noteIndex>=0)sheet.insertColumnsBefore(noteIndex+1,2);else sheet.insertColumnsAfter(sheet.getLastColumn(),2);}
   while(sheet.getMaxColumns()<HEADERS.length)sheet.insertColumnAfter(sheet.getMaxColumns()); sheet.getRange(1,1,1,HEADERS.length).setValues([HEADERS]); styleHeaders_(sheet);
 }
 function styleHeaders_(sheet){sheet.setFrozenRows(1);sheet.getRange(1,1,1,HEADERS.length).setFontWeight('bold').setBackground('#111827').setFontColor('#ffffff');}
