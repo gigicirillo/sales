@@ -2,6 +2,52 @@
   const container = document.getElementById('totalsBoxes');
   if (!container || typeof aggregate !== 'function') return;
 
+  const toggleWrap = document.createElement('div');
+  toggleWrap.style.display = 'flex';
+  toggleWrap.style.justifyContent = 'center';
+  toggleWrap.style.margin = '2px 0 0';
+
+  const toggleButton = document.createElement('button');
+  toggleButton.type = 'button';
+  toggleButton.textContent = 'Dettagli totali';
+  toggleButton.setAttribute('aria-expanded', 'false');
+  toggleButton.setAttribute('aria-controls', 'totalsBoxes');
+  toggleButton.style.border = '0';
+  toggleButton.style.borderRadius = '10px';
+  toggleButton.style.background = '#111827';
+  toggleButton.style.color = '#fff';
+  toggleButton.style.padding = '9px 16px';
+  toggleButton.style.font = 'inherit';
+  toggleButton.style.fontSize = '.78rem';
+  toggleButton.style.fontWeight = '900';
+  toggleButton.style.cursor = 'pointer';
+  toggleButton.style.boxShadow = '0 5px 14px rgba(15,23,42,.12)';
+
+  toggleWrap.appendChild(toggleButton);
+  container.parentNode.insertBefore(toggleWrap, container);
+
+  container.style.overflow = 'hidden';
+  container.style.maxHeight = '0px';
+  container.style.opacity = '0';
+  container.style.marginTop = '-10px';
+  container.style.transition = 'max-height .38s ease, opacity .25s ease, margin-top .38s ease';
+
+  let isOpen = false;
+  const syncHeight = () => {
+    if (isOpen) container.style.maxHeight = `${container.scrollHeight}px`;
+  };
+
+  toggleButton.addEventListener('click', () => {
+    isOpen = !isOpen;
+    toggleButton.setAttribute('aria-expanded', String(isOpen));
+    toggleButton.textContent = isOpen ? 'Nascondi dettagli totali' : 'Dettagli totali';
+    container.style.maxHeight = isOpen ? `${container.scrollHeight}px` : '0px';
+    container.style.opacity = isOpen ? '1' : '0';
+    container.style.marginTop = isOpen ? '0' : '-10px';
+  });
+
+  window.addEventListener('resize', syncHeight);
+
   const formatNumber = value => new Intl.NumberFormat('it-IT', { maximumFractionDigits: 2 }).format(Number(value) || 0);
   const formatHours = value => `${formatNumber(value)} h`;
   const formatMoney = value => new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 }).format(Number(value) || 0);
@@ -72,6 +118,7 @@
         item('Note compilate', formatNumber(notesFilled), `su ${formatNumber(rows.length)} giornate`)
       )
     ].join('');
+    syncHeight();
   }
 
   const originalRender = render;
