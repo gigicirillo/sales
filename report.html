@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#111827" />
   <title>Futura Clubs | Dashboard</title>
-  <link rel="stylesheet" href="report.css?v=20260827-2335" />
+  <link rel="stylesheet" href="report.css?v=20260828-0020" />
 </head>
 <body>
   <main class="report-shell">
@@ -15,12 +15,13 @@
     <section id="reportCapture" class="report-content">
       <div class="report-meta"><div><span>Periodo</span><strong id="periodLabel">—</strong></div><div><span>Venditore</span><strong id="sellerLabel">Tutti</strong></div><div><span>Centro</span><strong id="centerLabel">Tutti</strong></div><div><span>Righe analizzate</span><strong id="rowsLabel">0</strong></div></div>
       <section id="kpiGrid" class="kpi-grid"></section>
+      <section id="totalsBoxes" class="totals-boxes" aria-label="Totali per area"></section>
       <section class="charts-grid"><article class="chart-card" data-chart-group="operator"><div class="chart-heading"><h2>Ore lavorate</h2><p>Totale per venditore</p></div><canvas id="hoursChart" width="760" height="340"></canvas></article><article class="chart-card" data-chart-group="messages"><div class="chart-heading"><h2>Messaggi</h2><p>Messaggi inviati e compleanni</p></div><canvas id="messagesChart" width="760" height="340"></canvas></article><article class="chart-card"><div class="chart-heading"><h2>Azioni commerciali</h2><p>Volumi per tipologia</p></div><canvas id="actionsChart" width="760" height="340"></canvas></article><article class="chart-card"><div class="chart-heading"><h2>Conversioni</h2><p>Abbonamenti rispetto alle opportunità</p></div><canvas id="conversionChart" width="760" height="340"></canvas></article><article class="chart-card"><div class="chart-heading"><h2>Vendite e incassi</h2><p>Valori economici aggregati</p></div><canvas id="salesChart" width="760" height="340"></canvas></article><article class="chart-card"><div class="chart-heading"><h2>Performance venditori</h2><p>Fatturato per consulente nel periodo</p></div><canvas id="sellerChart" width="760" height="340"></canvas></article><article class="chart-card" data-chart-group="subscriptions"><div class="chart-heading"><h2>Abbonamenti venduti</h2><p>Totale per venditore</p></div><canvas id="subscriptionsChart" width="760" height="340"></canvas></article><article class="chart-card" data-chart-group="subscriptions"><div class="chart-heading"><h2>Fonti clienti</h2><p>Origine degli abbonamenti venduti</p></div><canvas id="sourcesChart" width="760" height="340"></canvas></article></section>
       <section class="detail-grid"><article class="detail-card" id="birthdayDetailCard"><div class="chart-heading"><h2>Esiti messaggi compleanno</h2><p>Dettaglio del periodo filtrato</p></div><div id="birthdayDetails" class="detail-list"></div></article><article class="detail-card" id="subscriptionsDetailCard"><div class="chart-heading"><h2>Dettaglio abbonamenti venduti</h2><p>Tipo abbonamento, cliente e fonte</p></div><div id="subscriptionDetails" class="detail-list"></div></article></section>
     </section>
     <div class="report-actions"><p id="reportMessage" aria-live="polite"></p><button id="exportJpg" type="button"><span class="jpg-icon">JPG</span> Esporta report</button></div>
   </main>
-  <script src="config.js?v=20260827-2335"></script><script src="report.js?v=20260827-2335"></script>
+  <script src="config.js?v=20260828-0020"></script><script src="report.js?v=20260828-0020"></script><script src="report-boxes.js?v=20260828-0020"></script>
   <script>
     (()=>{
       const oldButton=document.getElementById('exportJpg');
