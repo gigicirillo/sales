@@ -1,4 +1,4 @@
-const SPREADSHEET_ID = 'INCOLLA_QUI_ID_GOOGLE_SHEET';
+const SPREADSHEET_ID = '1u7puiT0sI9W2WYV3mbeYk_iBrRQhxSOiGbhlpXMCymw';
 
 const HEADERS = [
   'Data', 'Venditore',
@@ -36,7 +36,6 @@ function doPost(e) {
       n_(data.revenue), n_(data.collected), n_(data.futureAmount), new Date()
     ];
 
-    // Una sola riga per venditore/giorno: se esiste già, viene aggiornata.
     const existingRow = findExistingRow_(sheet, data.date, data.seller);
     if (existingRow) {
       sheet.getRange(existingRow, 1, 1, row.length).setValues([row]);
