@@ -5,7 +5,7 @@ const HEADERS = [
   'Telefonate fatte', 'Telefonate risposte', 'Appuntamenti da telefonate', 'Preventivi da telefonate', 'Abbonamenti da telefonate',
   'Tour fatti', 'Preventivi da tour fatti', 'Abbonamenti da tour',
   'Preventivi organici', 'Abbonamenti da preventivi organici', 'Rinnovi organici',
-  'Prove attivate', 'Guest pass consegnati',
+  'Prove attivate', 'Pass / Voucher Consegnati', 'Pass / Voucher Attivati',
   'Fatturato', 'Futura',
   'Totale Incassato', 'Inc. POS', 'Inc. Contanti', 'Inc. Bonifico', 'Inc. Finanziamento',
   'Note', 'Timestamp invio'
@@ -35,7 +35,7 @@ function doPost(e) {
       n_(data.callsMade), n_(data.callsAnswered), n_(data.appointmentsFromCalls), n_(data.quotesFromCalls), n_(data.subscriptionsFromCalls),
       n_(data.toursDone), n_(data.quotesFromTours), n_(data.subscriptionsFromTours),
       n_(data.organicQuotes), n_(data.subscriptionsFromOrganicQuotes), n_(data.organicRenewals),
-      n_(data.trialsActivated), n_(data.guestPasses),
+      n_(data.trialsActivated), n_(data.passesVouchersDelivered), n_(data.passesVouchersActivated),
       n_(data.revenue), n_(data.futuraAmount),
       n_(data.totalCollected), n_(data.collectedPos), n_(data.collectedCash), n_(data.collectedBank), n_(data.collectedFinance),
       String(data.notes || ''), new Date()
@@ -47,8 +47,8 @@ function doPost(e) {
 
     const rows = Math.max(sheet.getLastRow() - 1, 1);
     sheet.getRange(2, 1, rows, 1).setNumberFormat('dd/MM/yyyy');
-    sheet.getRange(2, 17, rows, 7).setNumberFormat('€ #,##0.00');
-    sheet.getRange(2, 25, rows, 1).setNumberFormat('dd/MM/yyyy HH:mm:ss');
+    sheet.getRange(2, 18, rows, 7).setNumberFormat('€ #,##0.00');
+    sheet.getRange(2, 26, rows, 1).setNumberFormat('dd/MM/yyyy HH:mm:ss');
     sheet.autoResizeColumns(1, HEADERS.length);
 
     return json_({ ok: true, sheet: monthName, updated: Boolean(existingRow) });
@@ -58,9 +58,20 @@ function doPost(e) {
 }
 
 function ensureHeaders_(sheet) {
-  const lastColumn = Math.max(sheet.getLastColumn(), HEADERS.length);
-  const current = sheet.getRange(1, 1, 1, lastColumn).getValues()[0];
+  while (sheet.getMaxColumns() < HEADERS.length) sheet.insertColumnAfter(sheet.getMaxColumns());
+  const current = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), HEADERS.length)).getValues()[0];
+
   if (current[2] !== 'Centro di competenza') sheet.insertColumnAfter(2);
+
+  const oldGuestPassIndex = current.indexOf('Guest pass consegnati');
+  if (oldGuestPassIndex >= 0) {
+    sheet.getRange(1, oldGuestPassIndex + 1).setValue('Pass / Voucher Consegnati');
+    sheet.insertColumnAfter(oldGuestPassIndex + 1);
+  } else if (current.indexOf('Pass / Voucher Consegnati') >= 0 && current.indexOf('Pass / Voucher Attivati') < 0) {
+    const deliveredCol = current.indexOf('Pass / Voucher Consegnati') + 1;
+    sheet.insertColumnAfter(deliveredCol);
+  }
+
   while (sheet.getMaxColumns() < HEADERS.length) sheet.insertColumnAfter(sheet.getMaxColumns());
   sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
   styleHeaders_(sheet);
