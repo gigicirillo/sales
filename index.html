@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#111827" />
   <title>Futura Clubs | Inserimento attività commerciali</title>
-  <link rel="stylesheet" href="styles.css?v=20260827-2348" />
+  <link rel="stylesheet" href="styles.css?v=20260827-2352" />
+  <style>.card-installments{background:#eef7ff}.installment-row{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;padding-top:6px;border-top:1px dashed rgba(100,116,139,.35);align-items:end}.installment-status{display:flex;gap:10px;align-items:center;min-height:29px;padding:0 8px;background:#fff;border:1px solid #cbd5e1;border-radius:7px}.installment-status label{display:flex;align-items:center;gap:4px;font-size:.62rem;font-weight:760;color:#475569;white-space:nowrap}.installment-status input{width:auto;height:auto;min-height:0}@media(max-width:620px){.installment-row{grid-template-columns:1fr}.installment-status{min-height:38px}}</style>
 </head>
 <body>
   <main class="app-shell">
@@ -32,7 +33,7 @@
     <section id="reviewView" class="summary-view" hidden><div class="summary-head"><div><p class="eyebrow">Verifica prima dell'invio</p><h2>Riepilogo giornata</h2><p>Controlla tutti i dati prima della conferma definitiva.</p></div></div><div id="reviewSummary" class="summary-card"></div><div class="summary-actions"><button id="backButton" type="button" class="secondary-button">Torna indietro</button><button id="confirmButton" type="button">Conferma e invia</button></div><p id="reviewMessage" class="form-message" aria-live="polite"></p></section>
     <section id="successView" class="summary-view" hidden><div id="successCapture"><div class="summary-head"><div><p class="sent-time" id="sentTime"></p><h2>Riepilogo dati inviati</h2><p>I dati sono stati registrati correttamente.</p></div></div><div id="successSummary" class="summary-card"></div></div><div class="summary-actions"><button id="newEntryButton" type="button">Nuovo inserimento</button><button id="downloadJpgButton" type="button" class="download-button"><span class="jpg-icon" aria-hidden="true">JPG</span> Download</button></div><p id="downloadMessage" class="form-message" aria-live="polite"></p></section>
   </main>
-  <script src="config.js?v=20260827-2348"></script><script src="app.js?v=20260827-2348"></script>
+  <script src="config.js?v=20260827-2352"></script><script src="app.js?v=20260827-2352"></script>
   <script>
     (()=>{
       const total=document.getElementById('totalCollected');
@@ -41,6 +42,26 @@
       parts.forEach(input=>{input.addEventListener('input',update);input.addEventListener('change',update)});
       document.getElementById('newEntryButton')?.addEventListener('click',()=>setTimeout(update,0));
       update();
+
+      const installmentsTotal=document.getElementById('installmentsTotal'),installmentsRows=document.getElementById('installmentsRows');
+      function renderInstallments(){
+        const count=Math.max(0,Math.min(50,parseInt(installmentsTotal.value,10)||0));
+        const old=[...installmentsRows.querySelectorAll('.installment-row')].map(row=>({amount:row.querySelector('[data-role="amount"]')?.value||'',user:row.querySelector('[data-role="user"]')?.value||'',status:row.querySelector('input[type="radio"]:checked')?.value||''}));
+        installmentsRows.innerHTML='';
+        for(let i=1;i<=count;i++){
+          const row=document.createElement('div');row.className='installment-row';
+          row.innerHTML=`<div class="field money-field"><label for="installmentAmount${i}">Importo Rata ${i}</label><div class="currency-wrap"><span>€</span><input data-role="amount" id="installmentAmount${i}" name="installmentAmount${i}" type="number" min="0" step="0.01" value="${old[i-1]?.amount||''}"></div></div><div class="field"><label for="installmentUser${i}">Utente ${i}</label><input data-role="user" id="installmentUser${i}" name="installmentUser${i}" type="text" value="${old[i-1]?.user||''}" placeholder="Utente ${i}"></div><div class="field"><label>Stato ${i}</label><div class="installment-status"><label><input type="radio" name="installmentStatus${i}" value="Rata ins." ${old[i-1]?.status==='Rata ins.'?'checked':''}> Rata ins.</label><label><input type="radio" name="installmentStatus${i}" value="Rata ris." ${old[i-1]?.status==='Rata ris.'?'checked':''}> Rata ris.</label></div></div>`;
+          installmentsRows.appendChild(row);
+        }
+      }
+      ['input','change','keyup'].forEach(evt=>installmentsTotal.addEventListener(evt,renderInstallments));renderInstallments();
+
+      const baseGetPayload=getPayload;
+      getPayload=function(){const payload=baseGetPayload();const count=Math.max(0,parseInt(installmentsTotal.value,10)||0),installments=[];for(let i=1;i<=count;i++){installments.push({amount:Number(document.getElementById(`installmentAmount${i}`)?.value)||0,user:(document.getElementById(`installmentUser${i}`)?.value||'').trim(),status:document.querySelector(`input[name="installmentStatus${i}"]:checked`)?.value||''})}payload.installmentsTotal=count;payload.installments=installments;return payload};
+      sections.splice(sections.length-1,0,['Ratei',[['Numero ratei','installmentsTotal'],['Dettaglio ratei','installments']]]);
+      const baseFormatValue=formatValue;
+      formatValue=function(k,v){if(k==='installments')return Array.isArray(v)&&v.length?v.map((x,i)=>`${i+1}. € ${Number(x.amount||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})} | ${x.user||'—'} | ${x.status||'—'}`).join(' · '):'—';return baseFormatValue(k,v)};
+      document.getElementById('newEntryButton')?.addEventListener('click',()=>{setTimeout(()=>{installmentsTotal.value='0';installmentsRows.innerHTML=''},0)});
     })();
   </script>
 </body>
