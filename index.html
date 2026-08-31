@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#111827" />
   <title>Futura Clubs | Inserimento attività commerciali</title>
   <link rel="stylesheet" href="styles.css?v=20260827-2352" />
-  <style>.card-installments{background:#eef7ff}.installment-row{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;padding-top:6px;border-top:1px dashed rgba(100,116,139,.35);align-items:end}.installment-status{display:flex;gap:10px;align-items:center;min-height:29px;padding:0 8px;background:#fff;border:1px solid #cbd5e1;border-radius:7px}.installment-status label{display:flex;align-items:center;gap:4px;font-size:.62rem;font-weight:760;color:#475569;white-space:nowrap}.installment-status input{width:auto;height:auto;min-height:0}@media(max-width:620px){.installment-row{grid-template-columns:1fr}.installment-status{min-height:38px}}</style>
+  <style>.card-installments{background:#eef7ff}.installment-row{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;padding-top:6px;border-top:1px dashed rgba(100,116,139,.35);align-items:end}.installment-status{display:flex;gap:10px;align-items:center;min-height:29px;padding:0 8px;background:#fff;border:1px solid #cbd5e1;border-radius:7px}.installment-status label{display:flex;align-items:center;gap:4px;font-size:.62rem;font-weight:760;color:#475569;white-space:nowrap}.installment-status input{width:auto;height:auto;min-height:0}.quote-row{display:grid;grid-template-columns:1fr;gap:6px;padding-top:6px;border-top:1px dashed rgba(100,116,139,.35)}@media(max-width:620px){.installment-row{grid-template-columns:1fr}.installment-status{min-height:38px}}</style>
 </head>
 <body>
   <main class="app-shell">
@@ -21,6 +21,7 @@
           <section class="card card-other"><div class="card-heading"><span>04</span><h2>Altre azioni</h2></div><div class="grid grid-2"><div class="field"><label>Pass / Voucher Attivati</label><input name="passesVouchersActivated" type="number" min="0" step="1" value="0" required /></div><div class="field"><label>Pass / Voucher Consegnati</label><input name="passesVouchersDelivered" type="number" min="0" step="1" value="0" required /></div></div></section>
           <section class="card card-sales"><div class="card-heading"><span>05</span><h2>Vendite</h2></div><div class="grid grid-2"><div class="field money-field"><label>Fatturato</label><div class="currency-wrap"><span>€</span><input name="revenue" type="number" min="0" step="0.01" value="0" required /></div></div><div class="field money-field"><label>Incassato Futura</label><div class="currency-wrap"><span>€</span><input name="futuraAmount" type="number" min="0" step="0.01" value="0" required /></div></div></div></section>
           <section class="card card-payments"><div class="card-heading"><span>06</span><h2>Incassato</h2></div><div class="grid grid-5"><div class="field money-field"><label>Totale</label><div class="currency-wrap"><span>€</span><input id="totalCollected" name="totalCollected" type="number" min="0" step="0.01" value="0" readonly /></div></div><div class="field money-field"><label>POS</label><div class="currency-wrap"><span>€</span><input id="collectedPos" name="collectedPos" type="number" min="0" step="0.01" value="0" required /></div></div><div class="field money-field"><label>Contanti</label><div class="currency-wrap"><span>€</span><input id="collectedCash" name="collectedCash" type="number" min="0" step="0.01" value="0" required /></div></div><div class="field money-field"><label>Bonifico</label><div class="currency-wrap"><span>€</span><input id="collectedBank" name="collectedBank" type="number" min="0" step="0.01" value="0" required /></div></div><div class="field money-field"><label>Finanziamento</label><div class="currency-wrap"><span>€</span><input id="collectedFinance" name="collectedFinance" type="number" min="0" step="0.01" value="0" required /></div></div></div></section>
+          <section class="card card-quotes"><div class="card-heading"><span>PREV</span><h2>Preventivi</h2></div><div class="field sold-total-field"><label>Numero preventivi</label><input id="quotesTotal" name="quotesTotal" type="number" min="0" step="1" value="0" required /></div><div id="quotesRows" class="subscription-rows"></div></section>
           <section class="card card-sold-subscriptions"><div class="card-heading"><span>ABB</span><h2>Abbonamenti Venduti</h2></div><div class="field sold-total-field"><label>Abbonamenti totali venduti</label><input id="soldSubscriptionsTotal" name="soldSubscriptionsTotal" type="number" min="0" step="1" value="0" required /></div><div id="soldSubscriptionsRows" class="subscription-rows"></div></section>
           <section class="card card-installments"><div class="card-heading"><span>RAT</span><h2>Ratei</h2></div><div class="field sold-total-field"><label>Numero ratei</label><input id="installmentsTotal" name="installmentsTotal" type="number" min="0" step="1" value="0" required /></div><div id="installmentsRows" class="subscription-rows"></div></section>
           <section class="card card-notes"><div class="card-heading"><span>07</span><h2>Note</h2></div><textarea id="notes" name="notes" rows="2" placeholder="Eventuali note sulla giornata"></textarea></section>
@@ -41,6 +42,23 @@
       document.getElementById('newEntryButton')?.addEventListener('click',()=>setTimeout(update,0));
       update();
 
+      const quotesTotal=document.getElementById('quotesTotal'),quotesRows=document.getElementById('quotesRows');
+      const quoteTypes=[['','Seleziona tipo preventivo'],['Rinnovo','1. Rinnovo'],['ExCliente-Tmk','2. ExCliente-Tmk'],['ExCliente-Spont.','3. ExCliente-Spont.'],['Tour/Spont.','3. Tour/Spont.'],['Cliente-Ups','4. Cliente-Ups']];
+      function renderQuoteRows(){
+        const count=Math.max(0,Math.min(50,parseInt(quotesTotal.value,10)||0));
+        const old=[...quotesRows.querySelectorAll('.quote-row select')].map(select=>select.value);
+        quotesRows.innerHTML='';
+        for(let i=1;i<=count;i++){
+          const row=document.createElement('div');row.className='quote-row';
+          const field=document.createElement('div');field.className='field';
+          const label=document.createElement('label');label.htmlFor=`quoteType${i}`;label.textContent=`Tipo preventivo ${i}`;
+          const select=document.createElement('select');select.id=`quoteType${i}`;select.name=`quoteType${i}`;
+          quoteTypes.forEach(([value,text])=>{const option=document.createElement('option');option.value=value;option.textContent=text;select.appendChild(option)});
+          select.value=old[i-1]||'';field.append(label,select);row.appendChild(field);quotesRows.appendChild(row);
+        }
+      }
+      ['input','change','keyup'].forEach(evt=>quotesTotal.addEventListener(evt,renderQuoteRows));renderQuoteRows();
+
       const installmentsTotal=document.getElementById('installmentsTotal'),installmentsRows=document.getElementById('installmentsRows');
       function renderInstallments(){
         const count=Math.max(0,Math.min(50,parseInt(installmentsTotal.value,10)||0));
@@ -55,11 +73,15 @@
       ['input','change','keyup'].forEach(evt=>installmentsTotal.addEventListener(evt,renderInstallments));renderInstallments();
 
       const baseGetPayload=getPayload;
-      getPayload=function(){const payload=baseGetPayload();const count=Math.max(0,parseInt(installmentsTotal.value,10)||0),installments=[];for(let i=1;i<=count;i++){installments.push({amount:Number(document.getElementById(`installmentAmount${i}`)?.value)||0,user:(document.getElementById(`installmentUser${i}`)?.value||'').trim(),status:document.querySelector(`input[name="installmentStatus${i}"]:checked`)?.value||''})}payload.installmentsTotal=count;payload.installments=installments;return payload};
-      sections.splice(sections.length-1,0,['Ratei',[['Numero ratei','installmentsTotal'],['Dettaglio ratei','installments']]]);
+      getPayload=function(){const payload=baseGetPayload();const quoteCount=Math.max(0,parseInt(quotesTotal.value,10)||0),quotes=[];for(let i=1;i<=quoteCount;i++){quotes.push({type:(document.getElementById(`quoteType${i}`)?.value||'').trim()})}payload.quotesTotal=quoteCount;payload.quotes=quotes;const count=Math.max(0,parseInt(installmentsTotal.value,10)||0),installments=[];for(let i=1;i<=count;i++){installments.push({amount:Number(document.getElementById(`installmentAmount${i}`)?.value)||0,user:(document.getElementById(`installmentUser${i}`)?.value||'').trim(),status:document.querySelector(`input[name="installmentStatus${i}"]:checked`)?.value||''})}payload.installmentsTotal=count;payload.installments=installments;return payload};
+      const notesIndex=sections.findIndex(([title])=>title==='Note');
+      const soldIndex=sections.findIndex(([title])=>title==='Abbonamenti Venduti');
+      if(soldIndex>=0)sections.splice(soldIndex,0,['Preventivi',[['Numero preventivi','quotesTotal'],['Dettaglio preventivi','quotes']]]);
+      const updatedNotesIndex=sections.findIndex(([title])=>title==='Note');
+      sections.splice(updatedNotesIndex,0,['Ratei',[['Numero ratei','installmentsTotal'],['Dettaglio ratei','installments']]]);
       const baseFormatValue=formatValue;
-      formatValue=function(k,v){if(k==='installments')return Array.isArray(v)&&v.length?v.map((x,i)=>`${i+1}. € ${Number(x.amount||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})} | ${x.user||'—'} | ${x.status||'—'}`).join(' · '):'—';return baseFormatValue(k,v)};
-      document.getElementById('newEntryButton')?.addEventListener('click',()=>{setTimeout(()=>{installmentsTotal.value='0';installmentsRows.innerHTML=''},0)});
+      formatValue=function(k,v){if(k==='quotes')return Array.isArray(v)&&v.length?v.map((x,i)=>`${i+1}. ${x.type||'—'}`).join(' · '):'—';if(k==='installments')return Array.isArray(v)&&v.length?v.map((x,i)=>`${i+1}. € ${Number(x.amount||0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})} | ${x.user||'—'} | ${x.status||'—'}`).join(' · '):'—';return baseFormatValue(k,v)};
+      document.getElementById('newEntryButton')?.addEventListener('click',()=>{setTimeout(()=>{quotesTotal.value='0';quotesRows.innerHTML='';installmentsTotal.value='0';installmentsRows.innerHTML=''},0)});
     })();
   </script>
 </body>
