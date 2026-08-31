@@ -35,6 +35,9 @@
       return authenticatedFetch(input,init);
     };
 
+    const newEntry=document.getElementById('newEntryButton');
+    newEntry?.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();location.href='index.html';},{capture:true});
+
     const status=document.getElementById('connectionStatus');
     if(status)status.textContent='Caricamento modifica…';
     try{
