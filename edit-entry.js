@@ -7,23 +7,6 @@
 
   const endpoint=window.SALES_APP_CONFIG?.GOOGLE_SCRIPT_URL?.trim();
   const original={date:editDate,seller:editSeller,center:editCenter};
-  const previousFetch=window.fetch.bind(window);
-
-  window.fetch=async function(input,init={}){
-    const url=typeof input==='string'?input:input?.url||'';
-    if(endpoint&&url.startsWith(endpoint)&&(init.method||'GET').toUpperCase()==='POST'&&typeof init.body==='string'){
-      try{
-        const body=JSON.parse(init.body);
-        if(!body.action){
-          body.originalDate=original.date;
-          body.originalSeller=original.seller;
-          body.originalCenter=original.center;
-          init={...init,body:JSON.stringify(body)};
-        }
-      }catch{}
-    }
-    return previousFetch(input,init);
-  };
 
   const setValue=(name,value)=>{
     const el=document.querySelector(`[name="${name}"]`)||document.getElementById(name);
@@ -34,11 +17,29 @@
   async function preload(){
     const session=window.SalesAuth?.session();
     if(!endpoint||!session?.token)return;
+
+    const authenticatedFetch=window.fetch.bind(window);
+    window.fetch=async function(input,init={}){
+      const url=typeof input==='string'?input:input?.url||'';
+      if(endpoint&&url.startsWith(endpoint)&&(init.method||'GET').toUpperCase()==='POST'&&typeof init.body==='string'){
+        try{
+          const body=JSON.parse(init.body);
+          if(!body.action){
+            body.originalDate=original.date;
+            body.originalSeller=original.seller;
+            body.originalCenter=original.center;
+            init={...init,body:JSON.stringify(body)};
+          }
+        }catch{}
+      }
+      return authenticatedFetch(input,init);
+    };
+
     const status=document.getElementById('connectionStatus');
     if(status)status.textContent='Caricamento modifica…';
     try{
       const q=new URLSearchParams({action:'report',from:editDate,to:editDate,seller:editSeller,center:editCenter,token:session.token});
-      const res=await previousFetch(`${endpoint}?${q}`);
+      const res=await authenticatedFetch(`${endpoint}?${q}`);
       const data=await res.json();
       if(!data.ok)throw new Error(data.error||'Errore caricamento dati');
       const row=(data.rows||[]).find(r=>r.date===editDate&&r.center===editCenter&&(data.user?.role==='admin'?r.seller===editSeller:true));
