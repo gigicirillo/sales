@@ -5,59 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#111827" />
   <title>Futura Clubs | Dashboard</title>
-  <link rel="stylesheet" href="report.css?v=20260828-0027" />
+  <link rel="stylesheet" href="report.css?v=20260831-final1" />
 </head>
 <body>
   <main class="report-shell">
     <header class="report-topbar"><div><p class="eyebrow">Futura Clubs</p><p>Analisi aggregata del gruppo vendita e dei singoli consulenti.</p></div><nav class="top-nav" aria-label="Navigazione principale"><a class="top-nav-link active" href="report.html">Dashboard</a><a class="top-nav-link" href="performance/">Indice</a><a class="top-nav-link" href="index.html">Inserimento Daily</a></nav></header>
     <section class="filters-card"><div class="filter-field"><label for="dateFrom">Dal</label><input id="dateFrom" type="date" /></div><div class="filter-field"><label for="dateTo">Al</label><input id="dateTo" type="date" /></div><div class="filter-field"><label for="sellerFilter">Venditore</label><select id="sellerFilter"><option value="all">Tutti i venditori</option><option>Donatella</option><option>Elena</option><option>Erika</option><option>Francesco</option><option>Ramses</option></select></div><div class="filter-field"><label for="centerFilter">Centro</label><select id="centerFilter"><option value="all">Tutti i centri</option><option>Futura Evo</option><option>Futura Fit</option></select></div><button id="applyFilters" type="button">Aggiorna report</button></section>
-    <section class="view-options"><strong>Visualizza:</strong><label><input type="checkbox" class="metric-toggle" value="operator" checked /> Operatore</label><label><input type="checkbox" class="metric-toggle" value="messages" checked /> Messaggi</label><label><input type="checkbox" class="metric-toggle" value="calls" checked /> Telefonate</label><label><input type="checkbox" class="metric-toggle" value="tours" checked /> Tour</label><label><input type="checkbox" class="metric-toggle" value="organic" checked /> Organico</label><label><input type="checkbox" class="metric-toggle" value="other" checked /> Altre azioni</label><label><input type="checkbox" class="metric-toggle" value="sales" checked /> Vendite</label><label><input type="checkbox" class="metric-toggle" value="payments" checked /> Incassi</label><label><input type="checkbox" class="metric-toggle" value="subscriptions" checked /> Abbonamenti venduti</label></section>
+    <section class="view-options"><strong>Visualizza:</strong><label><input type="checkbox" class="metric-toggle" value="operator" checked /> Operatore</label><label><input type="checkbox" class="metric-toggle" value="messages" checked /> Messaggi</label><label><input type="checkbox" class="metric-toggle" value="calls" checked /> Telefonate e Tour</label><label><input type="checkbox" class="metric-toggle" value="other" checked /> Altre azioni</label><label><input type="checkbox" class="metric-toggle" value="quotes" checked /> Preventivi</label><label><input type="checkbox" class="metric-toggle" value="sales" checked /> Vendite</label><label><input type="checkbox" class="metric-toggle" value="payments" checked /> Incassi</label><label><input type="checkbox" class="metric-toggle" value="subscriptions" checked /> Abbonamenti venduti</label></section>
     <section id="reportCapture" class="report-content">
       <div class="report-meta"><div><span>Periodo</span><strong id="periodLabel">—</strong></div><div><span>Venditore</span><strong id="sellerLabel">Tutti</strong></div><div><span>Centro</span><strong id="centerLabel">Tutti</strong></div><div><span>Righe analizzate</span><strong id="rowsLabel">0</strong></div></div>
       <section id="kpiGrid" class="kpi-grid"></section>
       <section id="totalsBoxes" class="totals-boxes" aria-label="Totali per area"></section>
-      <section class="charts-grid"><article class="chart-card" data-chart-group="operator"><div class="chart-heading"><h2>Ore lavorate</h2><p>Totale per venditore</p></div><canvas id="hoursChart" width="760" height="340"></canvas></article><article class="chart-card" data-chart-group="messages"><div class="chart-heading"><h2>Messaggi</h2><p>Messaggi inviati e compleanni</p></div><canvas id="messagesChart" width="760" height="340"></canvas></article><article class="chart-card"><div class="chart-heading"><h2>Azioni commerciali</h2><p>Volumi per tipologia</p></div><canvas id="actionsChart" width="760" height="340"></canvas></article><article class="chart-card"><div class="chart-heading"><h2>Conversioni</h2><p>Abbonamenti rispetto alle opportunità</p></div><canvas id="conversionChart" width="760" height="340"></canvas></article><article class="chart-card"><div class="chart-heading"><h2>Vendite e incassi</h2><p>Valori economici aggregati</p></div><canvas id="salesChart" width="760" height="340"></canvas></article><article class="chart-card"><div class="chart-heading"><h2>Performance venditori</h2><p>Fatturato per consulente nel periodo</p></div><canvas id="sellerChart" width="760" height="340"></canvas></article><article class="chart-card" data-chart-group="subscriptions"><div class="chart-heading"><h2>Abbonamenti venduti</h2><p>Totale per venditore</p></div><canvas id="subscriptionsChart" width="760" height="340"></canvas></article><article class="chart-card" data-chart-group="subscriptions"><div class="chart-heading"><h2>Fonti clienti</h2><p>Origine degli abbonamenti venduti</p></div><canvas id="sourcesChart" width="760" height="340"></canvas></article></section>
+      <section class="charts-grid">
+        <article class="chart-card" data-chart-group="operator"><div class="chart-heading"><h2>Ore lavorate</h2><p>Totale per venditore</p></div><canvas id="hoursChart" width="760" height="340"></canvas></article>
+        <article class="chart-card" data-chart-group="messages"><div class="chart-heading"><h2>Messaggi</h2><p>Messaggi inviati e compleanni</p></div><canvas id="messagesChart" width="760" height="340"></canvas></article>
+        <article class="chart-card"><div class="chart-heading"><h2>Azioni commerciali</h2><p>Volumi per tipologia</p></div><canvas id="actionsChart" width="760" height="340"></canvas></article>
+        <article class="chart-card"><div class="chart-heading"><h2>Conversioni</h2><p>Risposte e rapporto preventivi/abbonamenti</p></div><canvas id="conversionChart" width="760" height="340"></canvas></article>
+        <article class="chart-card"><div class="chart-heading"><h2>Vendite e incassi</h2><p>Valori economici aggregati</p></div><canvas id="salesChart" width="760" height="340"></canvas></article>
+        <article class="chart-card"><div class="chart-heading"><h2>Performance venditori</h2><p>Fatturato per consulente nel periodo</p></div><canvas id="sellerChart" width="760" height="340"></canvas></article>
+        <article class="chart-card" data-chart-group="subscriptions"><div class="chart-heading"><h2>Abbonamenti venduti</h2><p>Totale per venditore</p></div><canvas id="subscriptionsChart" width="760" height="340"></canvas></article>
+        <article class="chart-card" data-chart-group="subscriptions"><div class="chart-heading"><h2>Fonti clienti</h2><p>Origine degli abbonamenti venduti</p></div><canvas id="sourcesChart" width="760" height="340"></canvas></article>
+      </section>
       <section class="detail-grid"><article class="detail-card" id="birthdayDetailCard"><div class="chart-heading"><h2>Esiti messaggi compleanno</h2><p>Dettaglio del periodo filtrato</p></div><div id="birthdayDetails" class="detail-list"></div></article><article class="detail-card" id="subscriptionsDetailCard"><div class="chart-heading"><h2>Dettaglio abbonamenti venduti</h2><p>Tipo abbonamento, cliente e fonte</p></div><div id="subscriptionDetails" class="detail-list"></div></article></section>
     </section>
     <div class="report-actions"><p id="reportMessage" aria-live="polite"></p><button id="exportJpg" type="button"><span class="jpg-icon">JPG</span> Esporta report</button></div>
   </main>
-  <script src="config.js?v=20260828-0027"></script><script src="report.js?v=20260828-0027"></script><script src="report-boxes.js?v=20260828-0027"></script>
-  <script>
-    (()=>{
-      const oldButton=document.getElementById('exportJpg');
-      if(!oldButton)return;
-      const button=oldButton.cloneNode(true);
-      oldButton.replaceWith(button);
-      button.addEventListener('click',()=>{
-        try{
-          const a=aggregate(currentRows),canvas=document.createElement('canvas'),w=1600,h=1260,ctx=canvas.getContext('2d');
-          canvas.width=w;canvas.height=h;
-          ctx.fillStyle='#eef1f4';ctx.fillRect(0,0,w,h);
-          ctx.fillStyle='#111827';ctx.fillRect(45,45,w-90,145);
-          ctx.fillStyle='#fff';ctx.font='700 42px Arial';ctx.fillText('Report performance commerciale',80,105);
-          ctx.fillStyle='#cbd5e1';ctx.font='23px Arial';ctx.fillText(`Periodo ${formatDate(els.dateFrom.value)} - ${formatDate(els.dateTo.value)} · Venditore: ${els.sellerLabel.textContent} · Centro: ${els.centerLabel.textContent}`,80,150);
-          const cards=[['Ore lavorate',a.workedHours.toFixed(2)+' h'],['Messaggi',a.messagesSent],['Mess. compleanno',a.birthdayMessagesSent],['Abbonamenti venduti',a.soldSubscriptionsTotal],['Fatturato',euro(a.revenue)],['Incassato',euro(a.totalCollected)],['Telefonate',a.callsMade],['Appuntamenti',a.appointmentsFromCalls],['Tour',a.toursDone],['Rinnovi',a.organicRenewals],['Prove',a.trialsActivated],['Pass attivati',a.passesVouchersActivated]];
-          const cols=4,cw=(w-120)/cols,ch=108;
-          cards.forEach((c,i)=>{const x=45+(i%cols)*(cw+10),y=225+Math.floor(i/cols)*(ch+12);ctx.fillStyle='#fff';ctx.fillRect(x,y,cw,ch);ctx.fillStyle='#6b7280';ctx.font='18px Arial';ctx.fillText(c[0],x+18,y+30);ctx.fillStyle='#111827';ctx.font='700 30px Arial';ctx.fillText(String(c[1]),x+18,y+72)});
-          const rowCollected=r=>{const total=n(r.totalCollected);const parts=n(r.collectedPos)+n(r.collectedCash)+n(r.collectedBank)+n(r.collectedFinance);return total>0?total:parts};
-          const sellerVals=sellers.map(s=>{const rows=currentRows.filter(r=>r.seller===s);return {seller:s,revenue:rows.reduce((sum,r)=>sum+n(r.revenue),0),collected:rows.reduce((sum,r)=>sum+rowCollected(r),0)}});
-          ctx.fillStyle='#111827';ctx.font='700 27px Arial';ctx.fillText('Fatturato e incassato per venditore',55,610);
-          ctx.fillStyle='#6d28d9';ctx.fillRect(55,630,22,12);ctx.fillStyle='#475569';ctx.font='17px Arial';ctx.fillText('Fatturato',86,641);
-          ctx.fillStyle='#0891b2';ctx.fillRect(200,630,22,12);ctx.fillStyle='#475569';ctx.fillText('Incassato',231,641);
-          const max=Math.max(...sellerVals.flatMap(x=>[x.revenue,x.collected]),1);
-          sellerVals.forEach((it,i)=>{
-            const y=675+i*93,revW=900*it.revenue/max,incW=900*it.collected/max;
-            ctx.fillStyle='#374151';ctx.font='700 20px Arial';ctx.fillText(it.seller,55,y+35);
-            ctx.fillStyle='#6d28d9';ctx.fillRect(190,y,Math.max(revW,2),26);
-            ctx.fillStyle='#111827';ctx.font='700 17px Arial';ctx.fillText(euro(it.revenue),200+revW,y+19);
-            ctx.fillStyle='#0891b2';ctx.fillRect(190,y+36,Math.max(incW,2),26);
-            ctx.fillStyle='#111827';ctx.fillText(euro(it.collected),200+incW,y+55);
-          });
-          ctx.fillStyle='#6b7280';ctx.font='17px Arial';ctx.fillText(`Report esportato il ${new Intl.DateTimeFormat('it-IT',{dateStyle:'medium',timeStyle:'short'}).format(new Date())}`,55,h-38);
-          canvas.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=`report-vendite-${els.dateFrom.value}-${els.dateTo.value}.jpg`;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)},'image/jpeg',.94);
-        }catch(e){document.getElementById('reportMessage').textContent=`Esportazione non riuscita: ${e.message}`}
-      });
-    })();
-  </script>
+  <script src="config.js?v=20260831-final1"></script>
+  <script src="report.js?v=20260831-final1"></script>
+  <script src="report-boxes.js?v=20260831-final1"></script>
 </body>
 </html>
