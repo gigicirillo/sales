@@ -66,6 +66,7 @@
       setValue('passesVouchersDelivered',row.passesVouchersDelivered);
       setValue('revenue',row.revenue);
       setValue('futuraAmount',row.futuraAmount);
+      setValue('ticket',row.ticket||0);
       setValue('collectedPos',row.collectedPos);
       setValue('collectedCash',row.collectedCash);
       setValue('collectedBank',row.collectedBank);
@@ -74,6 +75,12 @@
       setValue('soldSubscriptionsTotal',row.soldSubscriptionsTotal);
       setValue('installmentsTotal',row.installmentsTotal);
       setValue('notes',row.notes);
+
+      const closingToggle=document.getElementById('eveningClosingEnabled');
+      if(closingToggle){
+        closingToggle.checked=Boolean(row.closingEnabled||Number(row.futuraAmount)>0||Number(row.ticket)>0);
+        if(window.SalesClosing?.syncClosing)window.SalesClosing.syncClosing(false);else fire(closingToggle);
+      }
 
       fire(document.getElementById('birthdayMessagesSent'));
       fire(document.getElementById('quotesTotal'));
