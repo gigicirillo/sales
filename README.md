@@ -82,7 +82,8 @@ Ticket e Futura non compilati vengono mostrati come 0,00 € nei riepiloghi e
 precompilati a zero in modifica Daily. I valori storici nel foglio non vengono
 riscritti automaticamente. La colonna arancione Inc. Ratei somma esclusivamente
 `installments[].amount` con stato `Rata ris.`, accanto a Incassato, includendo
-il totale di colonna e l'esportazione CSV. Non viene aggiunta di nuovo al totale incassato.
+il totale di colonna e l'esportazione CSV. La colonna e i suoi valori nelle
+esportazioni sono visibili solo al ruolo Admin confermato dalla risposta del report. Non viene aggiunta di nuovo al totale incassato.
 Nessun filtro basato sulla soglia 46.000 è applicato agli importi validi.
 
 Il recupero dei dati storici è un intervento separato: fare un backup,

@@ -74,7 +74,7 @@ test('Operator financial cells keep their named positions even when amounts coin
   const nodes=new Map();const node=id=>{if(!nodes.has(id))nodes.set(id,{value:'all',addEventListener(){},textContent:'',innerHTML:''});return nodes.get(id)};
   const ctx=vm.createContext({window:{SALES_APP_CONFIG:{}},document:{getElementById:node,querySelector:node},URLSearchParams,Intl,Date,console});
   vm.runInContext(fs.readFileSync('operatore.js','utf8'),ctx);
-  vm.runInContext(`rows=[{date:'2026-09-29',seller:'Ramses',revenue:0,totalCollected:0,futuraAmount:0,ticket:42.8},{date:'2026-09-29',seller:'Edy',revenue:25,totalCollected:25,futuraAmount:25,ticket:null}];render()`,ctx);
+  vm.runInContext(`reportIsAdmin=true;rows=[{date:'2026-09-29',seller:'Ramses',revenue:0,totalCollected:0,futuraAmount:0,ticket:42.8},{date:'2026-09-29',seller:'Edy',revenue:25,totalCollected:25,futuraAmount:25,ticket:null}];render()`,ctx);
   const html=node('#reportTable tbody').innerHTML;
   const data=[...html.matchAll(/<tr[^>]*>(.*?)<\/tr>/g)].map(x=>[...x[1].matchAll(/<td[^>]*>(.*?)<\/td>/g)].map(c=>c[1]));
   assert.match(data[0][12],/0,00/);assert.match(data[0][13],/0,00/);assert.match(data[0][14],/0,00/);assert.match(data[0][15],/42,80/);
@@ -89,9 +89,26 @@ test('Collected installments exclude unpaid, unknown and malformed amounts and d
   assert.equal(ctx.collectedInstallments({installments}),150.5);
   assert.equal(ctx.collectedInstallments({}),0);
   ctx.fixture=installments;
-  vm.runInContext(`rows=[{date:'2026-09-29',totalCollected:200,installments:fixture},{date:'2026-09-29',totalCollected:100,installments:[{amount:20,status:'Rata ris.'}]}];render()`,ctx);
+  vm.runInContext(`reportIsAdmin=true;rows=[{date:'2026-09-29',totalCollected:200,installments:fixture},{date:'2026-09-29',totalCollected:100,installments:[{amount:20,status:'Rata ris.'}]}];render()`,ctx);
   assert.match(node('#reportTable tbody').innerHTML,/<td class="ratei-col">150,50/);
   assert.match(node('#reportTable tfoot').innerHTML,/<td class="ratei-col">170,50/);
   assert.match(node('#reportTable tfoot').innerHTML,/<td class="incassato-col">300,00/);
   assert.doesNotMatch(node('#reportTable tbody').innerHTML,/N\/D/);
+});
+test('Installment column and CSV are admin-only, with hidden structural cells preserving sort indexes',()=>{
+  for(const admin of [false,true]){
+    const nodes=new Map();const node=id=>{if(!nodes.has(id))nodes.set(id,{value:'all',events:{},addEventListener(event,fn){this.events[event]=fn},textContent:'',innerHTML:''});return nodes.get(id)};
+    let csv='';
+    const ctx=vm.createContext({window:{SALES_APP_CONFIG:{}},document:{getElementById:node,querySelector:node,createElement:()=>({click(){}})},URLSearchParams,Intl,Date,console,Blob:class{constructor(parts){csv=parts.join('')}},URL:{createObjectURL:()=> 'blob:test',revokeObjectURL(){}},setTimeout(){}});
+    vm.runInContext(fs.readFileSync('operatore.js','utf8'),ctx);
+    vm.runInContext(`reportIsAdmin=${admin};rows=[{date:'2026-09-29',totalCollected:200,installments:[{amount:73.25,status:'Rata ris.'}]}];render()`,ctx);
+    assert.equal(node('rateiHeader').hidden,!admin);
+    assert.equal(node('#reportTable tbody').innerHTML.includes('73,25'),admin);
+    assert.equal(node('#reportTable tfoot').innerHTML.includes('73,25'),admin);
+    assert.equal((node('#reportTable tbody').innerHTML.match(/<td(?: |>|\b)/g)||[]).length,17);
+    node('exportCsv').events.click();
+    assert.equal(csv.includes('Inc. Ratei'),admin);
+    assert.equal(csv.includes('73.25'),admin);
+    const lines=csv.split('\r\n');assert.equal(lines[0].split(';').length,lines[1].split(';').length);
+  }
 });
