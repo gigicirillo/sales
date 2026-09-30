@@ -77,7 +77,21 @@ test('Operator financial cells keep their named positions even when amounts coin
   vm.runInContext(`rows=[{date:'2026-09-29',seller:'Ramses',revenue:0,totalCollected:0,futuraAmount:0,ticket:42.8},{date:'2026-09-29',seller:'Edy',revenue:25,totalCollected:25,futuraAmount:25,ticket:null}];render()`,ctx);
   const html=node('#reportTable tbody').innerHTML;
   const data=[...html.matchAll(/<tr[^>]*>(.*?)<\/tr>/g)].map(x=>[...x[1].matchAll(/<td[^>]*>(.*?)<\/td>/g)].map(c=>c[1]));
-  assert.match(data[0][12],/0,00/);assert.match(data[0][13],/0,00/);assert.match(data[0][14],/42,80/);
-  assert.match(data[1][12],/25,00/);assert.match(data[1][13],/25,00/);assert.equal(data[1][14],'N/D');
-  assert.match(node('#reportTable tfoot').innerHTML,/N\/D \(dati incompleti\)/);
+  assert.match(data[0][12],/0,00/);assert.match(data[0][13],/0,00/);assert.match(data[0][14],/0,00/);assert.match(data[0][15],/42,80/);
+  assert.match(data[1][12],/25,00/);assert.match(data[1][13],/0,00/);assert.match(data[1][14],/25,00/);assert.match(data[1][15],/0,00/);
+  assert.doesNotMatch(node('#reportTable tfoot').innerHTML,/N\/D/);
+});
+test('Collected installments exclude unpaid, unknown and malformed amounts and do not inflate receipts',()=>{
+  const nodes=new Map();const node=id=>{if(!nodes.has(id))nodes.set(id,{value:'all',addEventListener(){},textContent:'',innerHTML:''});return nodes.get(id)};
+  const ctx=vm.createContext({window:{SALES_APP_CONFIG:{}},document:{getElementById:node,querySelector:node},URLSearchParams,Intl,Date,console});
+  vm.runInContext(fs.readFileSync('operatore.js','utf8'),ctx);
+  const installments=[{amount:120,status:'Rata ris.'},{amount:'30.50',status:'Rata ris.'},{amount:800,status:'Rata ins.'},{amount:40,status:''},{amount:-2,status:'Rata ris.'},{amount:'bad',status:'Rata ris.'},null];
+  assert.equal(ctx.collectedInstallments({installments}),150.5);
+  assert.equal(ctx.collectedInstallments({}),0);
+  ctx.fixture=installments;
+  vm.runInContext(`rows=[{date:'2026-09-29',totalCollected:200,installments:fixture},{date:'2026-09-29',totalCollected:100,installments:[{amount:20,status:'Rata ris.'}]}];render()`,ctx);
+  assert.match(node('#reportTable tbody').innerHTML,/<td class="ratei-col">150,50/);
+  assert.match(node('#reportTable tfoot').innerHTML,/<td class="ratei-col">170,50/);
+  assert.match(node('#reportTable tfoot').innerHTML,/<td class="incassato-col">300,00/);
+  assert.doesNotMatch(node('#reportTable tbody').innerHTML,/N\/D/);
 });

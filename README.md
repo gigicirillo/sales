@@ -77,9 +77,12 @@ occupata, senza spostare o sovrascrivere i dati. Riutilizza le colonne vuote.
 Il report Operatore ora rende Incassato, Futura e Ticket direttamente dai campi
 omonimi; non usa più `operatore-ticket.js`, che cercava le celle confrontando
 importi uguali e poteva scambiarle. Ticket è incluso anche nel CSV.
-Gli incassi mancanti/non numerici sono `null` nell'API e N/D nei riepiloghi;
-i totali incompleti non vengono presentati come completi. In modifica Daily
-l'importo mancante richiede un valore esplicito quando la chiusura è attiva.
+Gli incassi mancanti/non numerici restano `null` nell'API. Su richiesta dell'utente,
+Ticket e Futura non compilati vengono mostrati come 0,00 € nei riepiloghi e
+precompilati a zero in modifica Daily. I valori storici nel foglio non vengono
+riscritti automaticamente. La colonna arancione Inc. Ratei somma esclusivamente
+`installments[].amount` con stato `Rata ris.`, accanto a Incassato, includendo
+il totale di colonna e l'esportazione CSV. Non viene aggiunta di nuovo al totale incassato.
 Nessun filtro basato sulla soglia 46.000 è applicato agli importi validi.
 
 Il recupero dei dati storici è un intervento separato: fare un backup,
