@@ -1,0 +1,11 @@
+.customer-spend-box{margin-top:12px}
+.customer-spend-chart{margin-top:12px;background:#fff;border-radius:12px;padding:16px;color:#111827;display:grid;gap:18px}
+.customer-spend-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 12px;min-width:0}
+.customer-spend-name{font-size:.8rem;font-weight:700;overflow-wrap:anywhere}
+.customer-spend-value{font-size:.88rem}
+.customer-spend-track{grid-column:1/-1;height:18px;background:#f3f4f6;border-radius:4px;overflow:hidden}
+.customer-spend-bar{height:100%;background:#6d28d9;border-radius:4px}
+.customer-spend-bar.negative{background:#dc2626}
+.customer-spend-detail{grid-column:1/-1;color:#64748b;font-size:.68rem;line-height:1.5;overflow-wrap:anywhere}
+.customer-spend-empty{color:#64748b;font-size:.8rem;margin:10px 0;text-align:center}
+@media(max-width:420px){.customer-spend-chart{padding:12px}.customer-spend-value{font-size:.8rem}}

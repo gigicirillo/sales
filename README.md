@@ -34,3 +34,32 @@ La piattaforma è statica e può essere pubblicata con GitHub Pages: **Settings 
 - Vendite: fatturato, incassato, Futurament
 
 Gli importi vengono salvati come numeri e formattati in euro nel foglio mensile.
+## Spesa media cliente (Performance / Indice)
+
+Il secondo grafico usa le righe del report già filtrate per periodo e centro,
+raggruppate per consulente; applica anche il filtro consulente della pagina.
+La media è il rapporto dei totali, non la media delle medie giornaliere:
+
+`(somma revenue − somma installments[].amount con status "Rata ris.") / somma soldSubscriptionsTotal`
+
+Mappatura verificata in `app.js` (payload Daily) e `google-apps-script/Code.gs`
+(lettura/scrittura del foglio):
+
+- `revenue`: colonna **Fatturato**; nessun importo nei dettagli degli abbonamenti.
+- `installments`: JSON della colonna **Dettaglio ratei**, con `amount` e `status`.
+  **Rata ris.** identifica una rata riscossa, **Rata ins.** una rata insoluta.
+- `soldSubscriptionsTotal`: **Abbonamenti totali venduti**, separato da
+  `installmentsTotal` (**Numero ratei**). Non sommare il conteggio o i dettagli
+  delle rate a quello degli abbonamenti.
+- `totalCollected`, le modalità di pagamento, `futuraAmount` e `ticket` non
+  entrano nel calcolo: aggiungerli al fatturato conterebbe nuovamente gli incassi.
+
+Zero abbonamenti o ratei con importo e stato sconosciuto danno **N/D**;
+importi netti negativi restano visibili. Nessuna modifica al calcolo dell'indice
+esistente e nessun nuovo deploy di Apps Script necessario.
+
+Test del calcolo: `node --test tests/customer-spend.test.js` (Node 20+).
+Test browser: avviare un server locale su `127.0.0.1:8765`, poi eseguire
+`node tests/performance-browser.cjs` con Playwright e Chrome installati.
+Il test browser sostituisce autenticazione e API solo nel contesto di prova,
+usando dati sintetici, senza accedere al Google Sheet.
