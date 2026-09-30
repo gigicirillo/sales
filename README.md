@@ -63,3 +63,25 @@ Test browser: avviare un server locale su `127.0.0.1:8765`, poi eseguire
 `node tests/performance-browser.cjs` con Playwright e Chrome installati.
 Il test browser sostituisce autenticazione e API solo nel contesto di prova,
 usando dati sintetici, senza accedere al Google Sheet.
+
+## Correzione incassi Ticket/Futura — 30 settembre 2026
+
+`ensureHeaders_` aggiungeva una colonna vuota e poi usava nuovamente
+`getLastColumn()`, che restituisce l'ultima colonna con contenuto, non quella
+appena allocata. Le intestazioni mancanti sovrascrivevano quindi l'ultima
+intestazione e mescolavano Ticket con Timestamp invio nei salvataggi successivi.
+I valori circa 46.294 sono seriali data/ora di Sheets, non importi.
+La migrazione ora scrive tutte le intestazioni mancanti dopo l'ultima colonna
+occupata, senza spostare o sovrascrivere i dati. Riutilizza le colonne vuote.
+
+Il report Operatore ora rende Incassato, Futura e Ticket direttamente dai campi
+omonimi; non usa più `operatore-ticket.js`, che cercava le celle confrontando
+importi uguali e poteva scambiarle. Ticket è incluso anche nel CSV.
+Gli incassi mancanti/non numerici sono `null` nell'API e N/D nei riepiloghi;
+i totali incompleti non vengono presentati come completi. In modifica Daily
+l'importo mancante richiede un valore esplicito quando la chiusura è attiva.
+Nessun filtro basato sulla soglia 46.000 è applicato agli importi validi.
+
+Il recupero dei dati storici è un intervento separato: fare un backup,
+confermare la struttura reale e preservare i valori originali. Non eseguire
+funzioni di configurazione password. Test: `node --test tests/*.test.js`.

@@ -9,6 +9,6 @@ document.head.appendChild(passVoucherScript);
 
 if(new URLSearchParams(location.search).has('editDate')){
   const editEntryScript=document.createElement('script');
-  editEntryScript.src='edit-entry.js?v=20260831-1';
+  editEntryScript.src='edit-entry.js?v=20260930-closing2';
   document.head.appendChild(editEntryScript);
 }

@@ -66,7 +66,7 @@
       setValue('passesVouchersDelivered',row.passesVouchersDelivered);
       setValue('revenue',row.revenue);
       setValue('futuraAmount',row.futuraAmount);
-      setValue('ticket',row.ticket||0);
+      setValue('ticket',row.ticket??'');
       setValue('collectedPos',row.collectedPos);
       setValue('collectedCash',row.collectedCash);
       setValue('collectedBank',row.collectedBank);
@@ -78,7 +78,7 @@
 
       const closingToggle=document.getElementById('eveningClosingEnabled');
       if(closingToggle){
-        closingToggle.checked=Boolean(row.closingEnabled||Number(row.futuraAmount)>0||Number(row.ticket)>0);
+        closingToggle.checked=Boolean(row.closingEnabled||row.futuraAmount==null||row.ticket==null||Number(row.futuraAmount)>0||Number(row.ticket)>0);
         if(window.SalesClosing?.syncClosing)window.SalesClosing.syncClosing(false);else fire(closingToggle);
       }
 
@@ -102,6 +102,7 @@
         if(radio)radio.checked=true;
       });
 
+      if(row.ticket==null||row.futuraAmount==null){const msg=document.getElementById('formMessage');if(msg)msg.textContent='Incassi storici incompleti: verifica e inserisci gli importi effettivi di chiusura prima di salvare.';}
       if(status)status.textContent='MODIFICA INSERIMENTO';
       const subtitle=document.querySelector('.subtitle');
       if(subtitle)subtitle.textContent=`Modifica inserimento del ${editDate.split('-').reverse().join('/')} · ${row.seller}`;
