@@ -1,6 +1,6 @@
-/* Fatturato and subscription counts come directly from the report API.
+/* Collected amounts and subscription counts come directly from the report API.
  * Only installments marked "Rata ris." are collected; "Rata ins." is unpaid.
- * Never add payment totals or installment counts to subscription sales.
+ * Collected totals already include paid installments: subtract them exactly once.
  */
 (function (root) {
   'use strict';
@@ -14,11 +14,11 @@
     for (const row of rows) {
       if (seller !== 'all' && row.seller !== seller) continue;
       if (!groups.has(row.seller)) groups.set(row.seller, {
-        seller: row.seller, revenue: 0, collectedInstallments: 0,
+        seller: row.seller, totalCollected: 0, collectedInstallments: 0,
         subscriptions: 0, unknownInstallments: 0
       });
       const item = groups.get(row.seller);
-      item.revenue += number(row.revenue);
+      item.totalCollected += number(row.totalCollected);
       item.subscriptions += number(row.soldSubscriptionsTotal);
       for (const installment of Array.isArray(row.installments) ? row.installments : []) {
         const status = String(installment?.status || '').trim();
@@ -28,9 +28,9 @@
     }
     return [...groups.values()].sort((a, b) => String(a.seller).localeCompare(String(b.seller), 'it')).map(item => ({
       ...item,
-      netRevenue: item.revenue - item.collectedInstallments,
+      netCollected: item.totalCollected - item.collectedInstallments,
       average: item.subscriptions > 0 && !item.unknownInstallments
-        ? (item.revenue - item.collectedInstallments) / item.subscriptions : null
+        ? (item.totalCollected - item.collectedInstallments) / item.subscriptions : null
     }));
   }
 
@@ -68,7 +68,7 @@
       detail.className = 'customer-spend-detail';
       detail.textContent = item.unknownInstallments
         ? 'Media non disponibile: verificare lo stato dei ratei nel Daily.'
-        : `Netto abbonamenti: ${euro(item.netRevenue)} · ${item.subscriptions} abbonamenti · Ratei riscossi esclusi: ${euro(item.collectedInstallments)}`;
+        : `Incassato netto: ${euro(item.netCollected)} · ${item.subscriptions} abbonamenti · Ratei riscossi esclusi: ${euro(item.collectedInstallments)}`;
       if (item.subscriptions <= 0) detail.textContent += ' · Nessun abbonamento venduto.';
       row.append(label, value, track, detail);
       target.appendChild(row);

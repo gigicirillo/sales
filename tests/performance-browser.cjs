@@ -7,9 +7,9 @@ const assert = require('node:assert/strict');
   const errors=[];
   page.on('pageerror', error => errors.push(error.message));
   const rows=[
-    {seller:'Sarah',date:'2026-09-20',center:'Futura Evo',revenue:1200,soldSubscriptionsTotal:2,workedHours:8,installments:[{amount:200,status:'Rata ris.'},{amount:400,status:'Rata ins.'}]},
-    {seller:'Sarah',date:'2026-09-21',center:'Futura Fit',revenue:400,soldSubscriptionsTotal:1,workedHours:8,installments:[]},
-    {seller:'Edy',date:'2026-09-20',center:'Futura Evo',revenue:100,soldSubscriptionsTotal:0,workedHours:8,installments:[{amount:100,status:'Rata ris.'}]}
+    {seller:'Sarah',date:'2026-09-20',center:'Futura Evo',revenue:9000,totalCollected:1200,soldSubscriptionsTotal:2,workedHours:8,installments:[{amount:200,status:'Rata ris.'},{amount:400,status:'Rata ins.'}]},
+    {seller:'Sarah',date:'2026-09-21',center:'Futura Fit',revenue:0,totalCollected:400,soldSubscriptionsTotal:1,workedHours:8,installments:[]},
+    {seller:'Edy',date:'2026-09-20',center:'Futura Evo',revenue:0,totalCollected:100,soldSubscriptionsTotal:0,workedHours:8,installments:[{amount:100,status:'Rata ris.'}]}
   ];
   await page.route('**/auth.js*', route => route.fulfill({contentType:'application/javascript',body:'window.SalesAuth={requireAuth(){document.documentElement.classList.add("authenticated")}}'}));
   await page.route('**/config.js*', route => route.fulfill({contentType:'application/javascript',body:'window.SALES_APP_CONFIG={GOOGLE_SCRIPT_URL:"http://127.0.0.1:8765/mock-report"}'}));
