@@ -21,7 +21,7 @@ test('Seller filter includes Sarah and all selects only consultants with data', 
   assert.deepEqual(aggregate(rows, 'missing'), []);
 });
 test('Zero sales and empty reports have no misleading average', () => {
-  assert.equal(aggregate(rows, 'Edy')[0].average, null);
+  assert.equal(aggregate(rows, 'Edy')[0].average, 0);
   assert.deepEqual(aggregate([]), []);
 });
 test('No installment details, numeric strings and zero collected amounts', () => {
@@ -39,4 +39,11 @@ test('Francesco: collected money counts even when revenue is zero', () => {
   const [item] = aggregate([{seller:'Francesco', revenue:0, totalCollected:1089, soldSubscriptionsTotal:3}], 'Francesco');
   assert.equal(item.netCollected, 1089);
   assert.equal(item.average, 363);
+});
+
+test('Donatella: unknown installments retain the amount that needs verification', () => {
+  const [item] = aggregate([{seller:'Donatella', totalCollected:1550, soldSubscriptionsTotal:5, installments:[{amount:100,status:''},{amount:120},{amount:200,status:''},{amount:180,status:''}]}]);
+  assert.equal(item.average, null);
+  assert.equal(item.unknownInstallments, 4);
+  assert.equal(item.unknownInstallmentAmount, 600);
 });

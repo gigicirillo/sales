@@ -15,7 +15,7 @@
       if (seller !== 'all' && row.seller !== seller) continue;
       if (!groups.has(row.seller)) groups.set(row.seller, {
         seller: row.seller, totalCollected: 0, collectedInstallments: 0,
-        subscriptions: 0, unknownInstallments: 0
+        subscriptions: 0, unknownInstallments: 0, unknownInstallmentAmount: 0
       });
       const item = groups.get(row.seller);
       item.totalCollected += number(row.totalCollected);
@@ -23,14 +23,17 @@
       for (const installment of Array.isArray(row.installments) ? row.installments : []) {
         const status = String(installment?.status || '').trim();
         if (status === 'Rata ris.') item.collectedInstallments += number(installment.amount);
-        else if (status !== 'Rata ins.' && number(installment?.amount) !== 0) item.unknownInstallments++;
+        else if (status !== 'Rata ins.' && number(installment?.amount) !== 0) {
+          item.unknownInstallments++;
+          item.unknownInstallmentAmount += number(installment.amount);
+        }
       }
     }
     return [...groups.values()].sort((a, b) => String(a.seller).localeCompare(String(b.seller), 'it')).map(item => ({
       ...item,
       netCollected: item.totalCollected - item.collectedInstallments,
-      average: item.subscriptions > 0 && !item.unknownInstallments
-        ? (item.totalCollected - item.collectedInstallments) / item.subscriptions : null
+      average: item.subscriptions <= 0 ? 0 : item.unknownInstallments ? null
+        : (item.totalCollected - item.collectedInstallments) / item.subscriptions
     }));
   }
 
@@ -55,7 +58,7 @@
       label.textContent = item.seller || 'Consulente non indicato';
       const value = document.createElement('strong');
       value.className = 'customer-spend-value';
-      value.textContent = item.average === null ? 'N/D' : euro(item.average);
+      value.textContent = item.average === null ? 'Da verificare' : euro(item.average);
       const track = document.createElement('div');
       track.className = 'customer-spend-track';
       track.setAttribute('aria-hidden', 'true');
@@ -67,7 +70,7 @@
       const detail = document.createElement('small');
       detail.className = 'customer-spend-detail';
       detail.textContent = item.unknownInstallments
-        ? 'Media non disponibile: verificare lo stato dei ratei nel Daily.'
+        ? `${item.unknownInstallments} ratei senza stato, per ${euro(item.unknownInstallmentAmount)}: indicare nel Daily se riscossi o da incassare.`
         : `Incassato netto: ${euro(item.netCollected)} · ${item.subscriptions} abbonamenti · Ratei riscossi esclusi: ${euro(item.collectedInstallments)}`;
       if (item.subscriptions <= 0) detail.textContent += ' · Nessun abbonamento venduto.';
       row.append(label, value, track, detail);
