@@ -3,11 +3,16 @@
   if (!container || typeof aggregate !== 'function') return;
 
   const toggleWrap=document.createElement('div');toggleWrap.style.display='flex';toggleWrap.style.justifyContent='center';toggleWrap.style.margin='2px 0 0';
-  const toggleButton=document.createElement('button');toggleButton.type='button';toggleButton.innerHTML='Dettagli totali <span aria-hidden="true">▼</span>';toggleButton.setAttribute('aria-expanded','false');toggleButton.setAttribute('aria-controls','totalsBoxes');toggleButton.style.border='0';toggleButton.style.borderRadius='10px';toggleButton.style.background='#111827';toggleButton.style.color='#fff';toggleButton.style.padding='9px 16px';toggleButton.style.font='inherit';toggleButton.style.fontSize='.78rem';toggleButton.style.fontWeight='900';toggleButton.style.cursor='pointer';toggleButton.style.boxShadow='0 5px 14px rgba(15,23,42,.12)';
+  const toggleButton=document.createElement('button');toggleButton.type='button';toggleButton.innerHTML='Mostra dettagli totali <span aria-hidden="true">▼</span>';toggleButton.setAttribute('aria-expanded','false');toggleButton.setAttribute('aria-controls','totalsBoxes');toggleButton.style.border='0';toggleButton.style.borderRadius='10px';toggleButton.style.background='#111827';toggleButton.style.color='#fff';toggleButton.style.padding='9px 16px';toggleButton.style.font='inherit';toggleButton.style.fontSize='.78rem';toggleButton.style.fontWeight='900';toggleButton.style.cursor='pointer';toggleButton.style.boxShadow='0 5px 14px rgba(15,23,42,.12)';
   toggleWrap.appendChild(toggleButton);container.parentNode.insertBefore(toggleWrap,container);
-  container.style.overflow='hidden';container.style.maxHeight='0px';container.style.opacity='0';container.style.marginTop='-10px';container.style.transition='max-height .38s ease, opacity .25s ease, margin-top .38s ease';
-  let isOpen=false;const syncHeight=()=>{if(isOpen)container.style.maxHeight=`${container.scrollHeight}px`};
-  toggleButton.addEventListener('click',()=>{isOpen=!isOpen;toggleButton.setAttribute('aria-expanded',String(isOpen));toggleButton.innerHTML=isOpen?'Nascondi dettagli totali <span aria-hidden="true">▲</span>':'Dettagli totali <span aria-hidden="true">▼</span>';container.style.maxHeight=isOpen?`${container.scrollHeight}px`:'0px';container.style.opacity=isOpen?'1':'0';container.style.marginTop=isOpen?'0':'-10px'});window.addEventListener('resize',syncHeight);
+  container.hidden=true;
+  let isOpen=false;
+  toggleButton.addEventListener('click',()=>{
+    isOpen=!isOpen;
+    container.hidden=!isOpen;
+    toggleButton.setAttribute('aria-expanded',String(isOpen));
+    toggleButton.innerHTML=isOpen?'Nascondi dettagli totali <span aria-hidden="true">▲</span>':'Mostra dettagli totali <span aria-hidden="true">▼</span>';
+  });
 
   const formatNumber=value=>new Intl.NumberFormat('it-IT',{maximumFractionDigits:2}).format(Number(value)||0);
   const formatHours=value=>`${formatNumber(value)} h`;
@@ -15,6 +20,23 @@
   const item=(label,value,note='')=>`<div class="totals-box-item"><span>${label}</span><strong>${value}</strong>${note?`<small>${note}</small>`:''}</div>`;
   const box=(badge,title,content)=>`<article class="totals-box"><div class="totals-box-head"><span class="totals-box-badge">${badge}</span><h2>${title}</h2></div><div class="totals-box-grid">${content}</div></article>`;
   function rowCollected(row){const total=Number(row.totalCollected)||0;const parts=(Number(row.collectedPos)||0)+(Number(row.collectedCash)||0)+(Number(row.collectedBank)||0)+(Number(row.collectedFinance)||0);return total>0?total:parts}
+  function installmentSummary(rows){
+    const totals={collected:{count:0,amount:0},inserted:{count:0,amount:0},unknown:{count:0,amount:0}};
+    rows.forEach(row=>(Array.isArray(row.installments)?row.installments:[]).forEach(rate=>{
+      const status=String(rate?.status||'').trim();
+      const group=status==='Rata ris.'?totals.collected:status==='Rata ins.'?totals.inserted:totals.unknown;
+      group.count++;
+      const amount=Number(rate?.amount);
+      if(Number.isFinite(amount)&&amount>=0)group.amount+=amount;
+    }));
+    return totals;
+  }
+  function installmentValues(rows){
+    const t=installmentSummary(rows);
+    const values=[['Ratei riscossi: numero',formatNumber(t.collected.count)],['Ratei riscossi: importo',formatMoney(t.collected.amount)],['Ratei inseriti: numero',formatNumber(t.inserted.count)],['Ratei inseriti: importo',formatMoney(t.inserted.amount)]];
+    if(t.unknown.count)values.push(['Da verificare: numero',formatNumber(t.unknown.count)],['Da verificare: importo',formatMoney(t.unknown.amount)]);
+    return values;
+  }
   function totalsData(rows){const a=aggregate(rows),collected=rows.reduce((s,r)=>s+rowCollected(r),0),quotesTotal=rows.reduce((s,r)=>s+(Number(r.quotesTotal)||0),0),installmentsTotal=rows.reduce((s,r)=>s+(Number(r.installmentsTotal)||0),0),notesFilled=rows.filter(r=>String(r.notes||'').trim()).length;return{a,collected,quotesTotal,installmentsTotal,notesFilled}}
   function renderTotalsBoxes(rows){const{a,collected,quotesTotal,installmentsTotal,notesFilled}=totalsData(rows);container.innerHTML=[
     box('OP','Operatore',item('Ore lavorate',formatHours(a.workedHours))+item('Giornate registrate',formatNumber(rows.length))),
@@ -25,9 +47,9 @@
     box('06','Incassato',item('Totale',formatMoney(collected))+item('POS',formatMoney(a.collectedPos))+item('Contanti',formatMoney(a.collectedCash))+item('Bonifico',formatMoney(a.collectedBank))+item('Finanziamento',formatMoney(a.collectedFinance))),
     box('PREV','Preventivi',item('Numero preventivi',formatNumber(quotesTotal))),
     box('ABB','Abbonamenti Venduti',item('Abbonamenti totali venduti',formatNumber(a.soldSubscriptionsTotal))),
-    box('RAT','Ratei',item('Numero ratei',formatNumber(installmentsTotal))),
+    box('RAT','Ratei',installmentValues(rows).map(([label,value])=>item(label,value)).join('')),
     box('07','Note',item('Note compilate',formatNumber(notesFilled),`su ${formatNumber(rows.length)} giornate`))
-  ].join('');syncHeight()}
+  ].join('')}
 
   const originalRender=render;render=function(rows){originalRender(rows);renderTotalsBoxes(rows||[])};renderTotalsBoxes(typeof currentRows!=='undefined'?currentRows:[]);
 
@@ -43,7 +65,7 @@
       {title:'Incassato',color:'#edf9f8',values:[['Totale',formatMoney(collected)],['POS',formatMoney(a.collectedPos)],['Contanti',formatMoney(a.collectedCash)],['Bonifico',formatMoney(a.collectedBank)],['Finanziamento',formatMoney(a.collectedFinance)]]},
       {title:'Preventivi',color:'#fff8e8',values:[['Numero preventivi',formatNumber(quotesTotal)]]},
       {title:'Abbonamenti Venduti',color:'#fffbe8',values:[['Abbonamenti totali venduti',formatNumber(a.soldSubscriptionsTotal)]]},
-      {title:'Ratei',color:'#eef7ff',values:[['Numero ratei',formatNumber(installmentsTotal)]]},
+      {title:'Ratei',color:'#eef7ff',values:installmentValues(rows)},
       {title:'Note',color:'#f8fafc',values:[['Note compilate',`${formatNumber(notesFilled)} su ${formatNumber(rows.length)} giornate`]]}
     ];
     const canvas=document.createElement('canvas'),w=1600,h=2380,ctx=canvas.getContext('2d');canvas.width=w;canvas.height=h;ctx.fillStyle='#eef1f4';ctx.fillRect(0,0,w,h);ctx.fillStyle='#111827';ctx.fillRect(45,45,w-90,145);ctx.fillStyle='#fff';ctx.font='700 42px Arial';ctx.fillText('Report performance commerciale',80,105);ctx.fillStyle='#cbd5e1';ctx.font='23px Arial';ctx.fillText(`Periodo ${formatDate(els.dateFrom.value)} - ${formatDate(els.dateTo.value)} · Venditore: ${els.sellerLabel.textContent} · Centro: ${els.centerLabel.textContent}`,80,150);ctx.fillStyle='#111827';ctx.font='700 28px Arial';ctx.fillText('Dettagli totali',55,235);
